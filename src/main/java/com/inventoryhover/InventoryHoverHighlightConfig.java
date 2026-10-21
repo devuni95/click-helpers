@@ -437,6 +437,61 @@ public interface InventoryHoverHighlightConfig extends Config
 		return new Color(255, 60, 60, 220);
 	}
 
+	@ConfigItem(
+		keyName = "dropMarker",
+		hidden = true,
+		name = "Drop marker",
+		description = "Show a ring where you drop an item",
+		position = 6,
+		section = clickSection
+	)
+	default boolean dropMarker()
+	{
+		return true;
+	}
+
+	@Alpha
+	@ConfigItem(
+		keyName = "dropColor",
+		hidden = true,
+		name = "Drop color",
+		description = "Color of the drop marker",
+		position = 7,
+		section = clickSection
+	)
+	default Color dropColor()
+	{
+		return new Color(160, 90, 255, 200);
+	}
+
+	@ConfigItem(
+		keyName = "shiftOutline",
+		hidden = true,
+		name = "Hover outline while shift is held",
+		description = "Outline the hovered area in its own color while shift is held, so a shift"
+			+ " click, like a drop, is easy to tell from an ordinary one",
+		position = 8,
+		section = clickSection
+	)
+	default boolean shiftOutline()
+	{
+		return true;
+	}
+
+	@Alpha
+	@ConfigItem(
+		keyName = "shiftOutlineColor",
+		hidden = true,
+		name = "Shift outline color",
+		description = "Color of the hover outline while shift is held",
+		position = 9,
+		section = clickSection
+	)
+	default Color shiftOutlineColor()
+	{
+		return new Color(255, 150, 40, 230);
+	}
+
 	// Missed clicks
 
 	@ConfigItem(

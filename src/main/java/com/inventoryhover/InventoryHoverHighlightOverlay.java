@@ -19,6 +19,7 @@ import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.event.KeyEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -411,6 +412,7 @@ class InventoryHoverHighlightOverlay extends Overlay
 		drawMissOutlines(graphics, panels, now);
 		drawRings(graphics, deadClicks, config.misclickColor(), now);
 		drawRings(graphics, plugin.rejectedClicks, config.rejectedClickColor(), now);
+		drawRings(graphics, plugin.dropClicks, config.dropColor(), now);
 		graphics.setClip(originalClip);
 		return null;
 	}
@@ -835,6 +837,12 @@ class InventoryHoverHighlightOverlay extends Overlay
 			// Hue from green (1/3) at the start of the tick to red (0) at the end
 			Color hue = Color.getHSBColor((float) ((1 - cycle) / 3), 1f, 1f);
 			outline = withAlpha(hue, outline.getAlpha());
+		}
+		else if (config.shiftOutline() && client.isKeyPressed(KeyEvent.VK_SHIFT))
+		{
+			// Shift clicks change what a click does, like dropping an item, so a
+			// held shift outlines the area that would get one differently
+			outline = config.shiftOutlineColor();
 		}
 
 		int width = tab.outlineWidth;

@@ -7,7 +7,10 @@ you click.
 - Highlights the exact clickable area under the mouse, with an optional grid of
   every clickable area and shading over dead gaps
 - Click flash, a queued click marker until the next game tick, a red ring when a
-  click does nothing, and a yellow ring when the game refuses a click
+  click does nothing, a yellow ring when the game refuses a click, and a purple
+  ring when you drop an item
+- Hover outline switches to its own color while shift is held, so shift clicks
+  like dropping stand out
 - Gold highlights for active prayers (from the server-confirmed state, so they do
   not flicker) and for a spell selected for manual casting
 - Optional mid-tick cue on prayers to help with prayer flicking
@@ -53,6 +56,12 @@ tab; see
 - **Queued click marker**: a dot on the clicked slot until the next game tick.
   It turns red when the same slot is clicked twice in one tick, and yellow when
   you eat or drink during the delay, since the game ignores that click
+- **Drop marker**: a ring where you drop an item, in its own color, using the ring
+  animation and duration below. Detected from the click's menu option, so it shows
+  as you drop rather than when a refusal comes back
+- **Hover outline while shift is held**: outlines the hovered area in its own color
+  while shift is down, so the area a shift click like a **Drop** will act on stands
+  out from an ordinary click. It uses the hover outline's line width and radius
 
 ### Missed clicks
 
