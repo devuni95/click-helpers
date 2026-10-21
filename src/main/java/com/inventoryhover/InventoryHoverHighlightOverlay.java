@@ -38,7 +38,6 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.Point;
 import net.runelite.api.Prayer;
-import net.runelite.api.SpritePixels;
 import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.widgets.Widget;
@@ -188,9 +187,6 @@ class InventoryHoverHighlightOverlay extends Overlay
 
 	/** Panels of the frame being drawn. */
 	private List<Panel> framePanels = new ArrayList<>();
-
-	/** Sprites by id, for their offset and full size, which the cached sprite images drop. */
-	private final Map<Integer, SpritePixels> sprites = new HashMap<>();
 
 	/** Fill passes, one per panel, drawn right after the game draws that panel's interface. */
 	private final List<Overlay> fillOverlays = List.of(
@@ -2161,35 +2157,20 @@ class InventoryHoverHighlightOverlay extends Overlay
 	}
 
 	/**
-	 * Draws a sprite the way the game draws it in a widget. The cached image is
-	 * trimmed to the sprite's pixels, so it goes at the sprite's offset inside its
-	 * full size, with the full size scaled to the widget.
+	 * Draws a sprite the way the game draws it in a widget: its cached image
+	 * already covers the sprite's whole area, padding included, so drawing it at
+	 * its natural size puts the pixels where the game has them. Widget bounds are
+	 * the wrong size to draw to, since they scale with the interface, which would
+	 * stretch the sprite instead of keeping it the same size as the game's.
 	 */
 	private void drawSprite(Graphics2D graphics, int spriteId, Rectangle bounds)
 	{
 		BufferedImage image = spriteManager.getSprite(spriteId, 0);
-		SpritePixels sprite = sprites.computeIfAbsent(spriteId, id ->
-		{
-			SpritePixels[] all = client.getSprites(client.getIndexSprites(), id, 0);
-			return all == null || all.length == 0 ? null : all[0];
-		});
 		if (image == null)
 		{
 			return;
 		}
-		if (sprite == null || sprite.getMaxWidth() <= 0 || sprite.getMaxHeight() <= 0)
-		{
-			graphics.drawImage(image, bounds.x, bounds.y, bounds.width, bounds.height, null);
-			return;
-		}
-
-		double scaleX = (double) bounds.width / sprite.getMaxWidth();
-		double scaleY = (double) bounds.height / sprite.getMaxHeight();
-		int x = bounds.x + (int) Math.round(sprite.getOffsetX() * scaleX);
-		int y = bounds.y + (int) Math.round(sprite.getOffsetY() * scaleY);
-		int width = (int) Math.round(image.getWidth() * scaleX);
-		int height = (int) Math.round(image.getHeight() * scaleY);
-		graphics.drawImage(image, x, y, width, height, null);
+		graphics.drawImage(image, bounds.x, bounds.y, null);
 	}
 
 	/** Draws the sprites of a widget and its visible children at their places. */
