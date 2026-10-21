@@ -747,11 +747,27 @@ public interface InventoryHoverHighlightConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "instantPrayers",
+		hidden = true,
+		name = "Instant prayer feedback",
+		description = "Fill the highlight as soon as you click, from your new prayer state,"
+			+ " instead of waiting for the server to confirm the change. Off makes the fill"
+			+ " appear on the tick the server confirms it, showing the click as pending meanwhile",
+		position = 1,
+		section = prayerSection
+	)
+	default boolean instantPrayers()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "pendingPrayers",
 		hidden = true,
 		name = "Pending prayer state",
-		description = "Show a dashed outline from your click until the server confirms the prayer change",
-		position = 1,
+		description = "Show a dashed outline from your click until the server confirms the prayer change;"
+			+ " while it is pending, the fill shows your new state when Instant prayer feedback is on",
+		position = 2,
 		section = prayerSection
 	)
 	default boolean pendingPrayers()
@@ -764,7 +780,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "Selected spell highlight",
 		description = "Give a spell selected for manual casting the same gold highlight as an active prayer",
-		position = 2,
+		position = 3,
 		section = prayerSection
 	)
 	default boolean selectedSpell()
@@ -777,7 +793,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "Autocast marker",
 		description = "Outline the spell set to autocast; hovering it shows the hover highlight instead",
-		position = 3,
+		position = 4,
 		section = prayerSection
 	)
 	default boolean autocastMarker()
@@ -791,7 +807,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "Active outline",
 		description = "Outline color of an active prayer or selected spell",
-		position = 4,
+		position = 5,
 		section = prayerSection
 	)
 	default Color activePrayerColor()
@@ -805,7 +821,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "Active fill",
 		description = "Fill color of an active prayer or selected spell",
-		position = 5,
+		position = 6,
 		section = prayerSection
 	)
 	default Color activePrayerFill()
@@ -819,7 +835,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "Autocast color",
 		description = "Color of the autocast marker",
-		position = 6,
+		position = 7,
 		section = prayerSection
 	)
 	default Color autocastColor()

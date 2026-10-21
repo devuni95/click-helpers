@@ -8,8 +8,8 @@ you click.
   every clickable area and shading over dead gaps
 - Click flash, a queued click marker until the next game tick, a red ring when a
   click does nothing, and a yellow ring when the game refuses a click
-- Gold highlights for active prayers (from the server-confirmed state, so they do
-  not flicker) and for a spell selected for manual casting
+- Gold highlights for active prayers (instant on click, from the server-confirmed
+  state, so they do not flicker) and for a spell selected for manual casting
 - Optional mid-tick cue on prayers to help with prayer flicking
 - Miss markers, a floating click chart, and settings you can share
 - Per-tab settings for the inventory, prayer tab and spellbook, with an option to
@@ -81,8 +81,12 @@ tab; see
 - **Active prayer highlight**: replaces the game's active prayer glow with a gold
   highlight that follows the server-confirmed prayer state, so it does not
   flicker when clicking fast
+- **Instant prayer feedback**: fills the highlight as soon as you click, from your
+  new prayer state, instead of on the tick the server confirms it. On by default;
+  turn it off to see the click as pending until the server agrees
 - **Pending prayer state**: a dashed outline from your click until the server
-  confirms the change (half fill while turning off)
+  confirms the change. While it is pending, the fill shows your new state if
+  **Instant prayer feedback** is on, and a half fill on the way out if it is off
 - **Selected spell highlight**: a spell selected for manual casting gets the same
   highlight as an active prayer
 - **Autocast marker**: outlines the spell set to autocast; hovering it shows the

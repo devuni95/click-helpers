@@ -2554,7 +2554,7 @@ class InventoryHoverHighlightOverlay extends Overlay
 		}
 	}
 
-	/** Highlights active prayers using the server-confirmed state. */
+	/** Highlights active prayers, instantly for a click the server has not confirmed yet. */
 	private void drawActivePrayers(Graphics2D graphics)
 	{
 		if (!config.activePrayers())
@@ -2603,11 +2603,14 @@ class InventoryHoverHighlightOverlay extends Overlay
 			}
 
 			// Pending: the click is sent but the server has not confirmed it yet.
-			// Turning on: dashed outline only. Turning off: half fill, dashed outline.
-			if (confirmed)
+			// A toggle on, and a toggle off with instant feedback, fills the new
+			// state at once, so the click shows as it is made; a toggle off without
+			// it keeps the half fill that fades out as the glow goes.
+			if (confirmed || (config.instantPrayers() && predicted))
 			{
 				Color fill = config.activePrayerFill();
-				graphics.setColor(withAlpha(fill, fill.getAlpha() / 2));
+				graphics.setColor(config.instantPrayers() ? fill
+					: withAlpha(fill, fill.getAlpha() / 2));
 				graphics.fill(fillShape(bounds));
 			}
 			graphics.setStroke(new BasicStroke(width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
