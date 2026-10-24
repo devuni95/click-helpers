@@ -47,11 +47,15 @@ class CommunityLoadouts
 	static final int SLOTS = 10;
 
 	/**
-	 * Owner id of the default loadouts, kept under /official where only admins
-	 * write. Firebase ids are 28 characters, so no install can have this one.
+	 * Owner id of the default loadouts, kept under /users like any other, so older
+	 * versions list them too. Only admins write there: Firebase ids are 28
+	 * characters, so no install can have this one.
 	 */
 	static final String DEFAULT_UID = "default";
-	/** Author shown on the default loadouts; players cannot publish under it. */
+	/**
+	 * Author shown on the default loadouts, whose names also end in "(Default)" so
+	 * older versions show them as defaults. Players cannot use the word in either.
+	 */
 	static final String DEFAULT_AUTHOR = "Default";
 
 	private static final int MAX_LISTED = 200;
@@ -183,9 +187,10 @@ class CommunityLoadouts
 						entries.addAll(entriesOf(user.getKey(), user.getValue(), false));
 					}
 				}
-				List<Entry> defaults = entriesOf(DEFAULT_UID, optionalJson(DATABASE_URL + "/official.json"), false);
 				countInstalls(entries, installs, me);
-				countInstalls(defaults, installs, me);
+				List<Entry> defaults = new ArrayList<>();
+				entries.removeIf(e -> e.isDefault() && defaults.add(e));
+				defaults.sort(Comparator.comparingInt(e -> e.slot));
 				entries.sort(Comparator.comparingLong((Entry e) -> e.created).reversed());
 				List<Entry> newest = new ArrayList<>(entries.subList(0, Math.min(MAX_LISTED, entries.size())));
 				// Defaults come first and whatever the cap, since they are few and meant to be found
@@ -207,7 +212,7 @@ class CommunityLoadouts
 	void publish(String rawName, String settings, String rawPlayerName, Consumer<Result> done)
 	{
 		String name = rawName == null ? "" : rawName.trim();
-		String problem = NameFilter.problem(name);
+		String problem = NameFilter.publishProblem(name);
 		if (problem != null)
 		{
 			done.accept(new Result(problem, false));
@@ -454,7 +459,7 @@ class CommunityLoadouts
 	}
 
 	/**
-	 * Data the list can do without, such as download counts and the defaults, or
+	 * Data the list can do without, such as download counts, or
 	 * null when it cannot be read, so the published loadouts still show.
 	 */
 	private JsonElement optionalJson(String url)

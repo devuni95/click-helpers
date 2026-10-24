@@ -1,11 +1,13 @@
 """
-Builds the default loadouts that every player sees in the Community browser,
-by the reserved author "Default". Writes firebase/defaults.json, which an admin
-uploads with:
+Builds the default loadouts that every player sees in the Community browser.
+They live under users/default like any published loadout, so every plugin
+version lists them; names end in "(Default)", and 1.2.1 and later also show the
+author "Default". Writes firebase/defaults.json, which an admin uploads with:
 
-    firebase database:set /official firebase/defaults.json
+    firebase database:set /users/default firebase/defaults.json
 
-Players cannot write /official; the rules allow only admins.
+No player can write users/default (Firebase ids are 28 characters), and the
+rules refuse the word "default" in any player's loadout name.
 """
 import json
 import os
@@ -142,7 +144,7 @@ def main():
     for slot, (name, settings) in enumerate(loadouts()):
         export = {"plugin": "click-helpers", "version": 1, "settings": settings}
         # Older first, so the browser's newest-first sort keeps this order
-        out[str(slot)] = {"name": name, "created": now - slot * 1000, "settings": json.dumps(export)}
+        out[str(slot)] = {"name": name + " (Default)", "created": now - slot * 1000, "settings": json.dumps(export)}
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "defaults.json")
     with open(path, "w", encoding="utf-8") as f:
         json.dump(out, f, indent=2)

@@ -22,7 +22,6 @@ Until both values are set, the Community tab says it is not available.
 ```
 users/<uid>/<slot 0-9>: { name, created, settings, author?, hidden? }
 installs/<owner uid>/<slot>/<installer uid>: true
-official/<slot>: { name, created, settings }   (default loadouts, admin only)
 banned/<uid>: true
 config/writesOpen: false   (optional kill switch)
 ```
@@ -35,14 +34,16 @@ settings up to 64 KB. Players cannot set any other field.
 12 letters, numbers, spaces, `_` or `-`. It cannot be checked against the game, so
 someone sending requests by hand could claim any name; hide such entries as below.
 
-Default loadouts live under `official` and show by the author "Default", which
-players cannot publish under. Players cannot write there; edit
-`firebase/defaults.py`, run it, then upload as an admin (in Git Bash, set
+Default loadouts live under `users/default`, so every plugin version lists them.
+Their names end in "(Default)", and 1.2.1 and later also show the author
+"Default". No install can write there, since Firebase ids are 28 characters, and
+the rules refuse the word "default" in any player's loadout name. To change them,
+edit `firebase/defaults.py`, run it, then upload as an admin (in Git Bash, set
 `MSYS_NO_PATHCONV=1` so the path is not rewritten):
 
 ```
 python firebase/defaults.py
-firebase database:set /official firebase/defaults.json -f
+firebase database:set /users/default firebase/defaults.json -f
 ```
 
 Their downloads count under `installs/default/<slot>`.

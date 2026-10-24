@@ -185,6 +185,17 @@ final class NameFilter
 		return null;
 	}
 
+	/** Why a player cannot publish under this name, or null when they can. Only default loadouts say "default". */
+	static String publishProblem(String name)
+	{
+		String problem = problem(name);
+		if (problem == null && name.toLowerCase().contains("default"))
+		{
+			return "Names cannot use the word default, which marks the default loadouts.";
+		}
+		return problem;
+	}
+
 	/** Swaps numbers and symbols that stand in for letters, so "n4me" reads as "name". */
 	private static String unleet(String text)
 	{
