@@ -54,88 +54,54 @@ def missed(color_value, ring="GROW", ring_ms=450):
     })}
 
 
-def loadouts():
-    red = color(255, 60, 60, 210)
-    clean = {
-        "Areas": text({"prayers": True, "spells": True, "bankInventory": True, "onlyItems": True,
-                       "grid": "OFF", "roundedAreas": True}),
-        "Click feedback": text({"clickFlash": True, "clickFlashColor": color(255, 255, 255, 70),
-                                "clickFlashDuration": 150, "clickMarker": False}),
-        **missed(red),
-        "Dead areas": text({"deadAreas": "OFF"}),
-        **hover("OUTLINE", color(255, 255, 255, 150), color(255, 255, 255, 0), fade=250),
-    }
+def themed():
+    """Five more loadouts that set every section, each with its own look per tab."""
+    def theme(accent, second, glow, dim, miss, hit, flash, fill, slot, grid, dead, falloff, particle,
+              ring, cue, dot, shape, radius, reach, spread, amount, speed, looks):
+        return complete({
+            "accent": accent, "second": second, "glow": glow, "dim": dim, "miss": miss,
+            "refused": color(160, 160, 170, 210), "hit": hit, "flash": flash, "fill": fill, "slot": slot,
+            "grid": grid, "dead": dead, "falloff": falloff, "particle": particle, "ring": ring, "cue": cue,
+            "dot": dot, "shape": shape, "radius": radius, "reach": reach, "spread": spread, "amount": amount,
+            "speed": speed, "looks": looks})
 
-    pvp = {
-        "Areas": text({"prayers": True, "spells": True, "bankInventory": True, "onlyItems": True,
-                       "grid": "OFF", "roundedAreas": True}),
-        "Click feedback": text({"clickFlash": True, "clickFlashColor": color(120, 255, 140, 110),
-                                "clickFlashDuration": 120, "clickMarker": True,
-                                "clickMarkerColor": color(120, 255, 140, 220),
-                                "doubleClickColor": color(255, 220, 60, 230)}),
-        **missed(red, ring="CROSS", ring_ms=400),
-        "Dead areas": text({"deadAreas": "IN_PANEL", "deadInventory": True,
-                            "deadInventoryColor": color(255, 40, 40, 45), "deadPrayers": True,
-                            "deadPrayersColor": color(255, 40, 40, 45), "deadSpells": True,
-                            "deadSpellsColor": color(255, 40, 40, 45)}),
-        "Eat and drink delay": text({"cooldowns": True, "cooldownStyle": "DRAIN",
-                                     "cooldownColor": color(0, 0, 0, 130)}),
-        **hover("BOTH", color(120, 255, 140, 220), color(120, 255, 140, 45), width=2, fade=0),
-    }
-
-    flick = {
-        "Areas": text({"prayers": True, "spells": True, "onlyItems": True, "grid": "OFF",
-                       "roundedAreas": True}),
-        "Prayers and spells": text({"activePrayers": True, "pendingPrayers": True, "selectedSpell": True,
-                                    "autocastMarker": True, "activePrayerColor": color(255, 200, 60, 230),
-                                    "activePrayerFill": color(255, 200, 60, 60)}),
-        "Tick cue": text({"tickCue": "PULSE", "tickCueAllPrayers": False,
-                          "cuePrayers": "Protect from Magic, Protect from Missiles, Protect from Melee",
-                          "pulseColor": color(170, 110, 255, 120), "tickLatency": 20, "pulsePosition": 40}),
-        **missed(red),
-        **hover("BOTH", color(255, 255, 255, 170), color(170, 110, 255, 40), fade=150),
-    }
-
-    contrast = {
-        "Areas": text({"prayers": True, "spells": True, "bankInventory": True, "onlyItems": False,
-                       "grid": "IN_PANEL", "gridColor": color(255, 255, 255, 40), "roundedAreas": False}),
-        "Click feedback": text({"clickFlash": True, "clickFlashColor": color(255, 235, 0, 120),
-                                "clickFlashDuration": 250, "clickMarker": True,
-                                "clickMarkerColor": color(255, 235, 0, 255)}),
-        **missed(color(255, 0, 200, 230), ring="CROSS", ring_ms=700),
-        "Dead areas": text({"deadAreas": "ALWAYS", "deadInventory": True,
-                            "deadInventoryColor": color(0, 0, 0, 120), "deadBank": True,
-                            "deadBankColor": color(0, 0, 0, 120), "deadPrayers": True,
-                            "deadPrayersColor": color(0, 0, 0, 120), "deadSpells": True,
-                            "deadSpellsColor": color(0, 0, 0, 120)}),
-        **hover("BOTH", color(255, 235, 0, 255), color(255, 235, 0, 70), width=3, radius=0, fade=0),
-    }
-
-    glow = {
-        "Click feedback": text({"clickFlash": False, "clickMarker": False}),
-        **missed(red),
-        **hover("OUTLINE", color(255, 255, 255, 120), color(255, 255, 255, 0), fade=400),
-        "Inventory: spotlight": text({
-            "invSpotlight": True, "invSpotlightRadius": 140, "invSpotlightDim": color(0, 0, 0, 90),
-            "invSpotlightGlow": color(255, 230, 170, 50), "invSpotlightGlowSize": 40,
-            "invSpotlightShape": "SMOOTH", "invSpotlightType": "CIRCLE", "invSpotlightMotion": "NONE",
-            "invSpotlightEffect": "SPARKLES", "invSpotlightEffectColor": "OVERLAY",
-            "invSpotlightEffectOnClick": True, "invSpotlightEffectDetach": True,
-            "invSpotlightEffectReach": 200, "invSpotlightEffectSpread": 150,
-            "invSpotlightEffectLength": 900, "invSpotlightEffectSpeed": 100, "invSpotlightEffectSize": 100,
-            "invSpotlightClickResult": True, "invSpotlightClickAnywhere": True,
-            "invSpotlightClickAnywhereDelay": 0, "invSpotlightAlways": False,
-            "invSpotlightDeadOnly": False, "invSpotlightFalloff": False,
-        }),
-    }
-
-    return [
-        ("Clean Outline", clean),
-        ("PvP Switcher", pvp),
-        ("Prayer Flicker", flick),
-        ("High Contrast", contrast),
-        ("Spotlight Sparkle", glow),
-    ]
+    toxic = theme(color(150, 255, 60, 230), color(230, 255, 80, 230), color(90, 255, 40, 70), color(5, 25, 0, 125),
+                  color(255, 120, 200, 230), color(200, 255, 120, 230), color(150, 255, 60, 90),
+                  color(120, 255, 40, 40), color(10, 40, 0, 70), color(150, 255, 60, 30), color(5, 30, 0, 70),
+                  color(30, 90, 0, 60), color(180, 255, 90, 230), "PULSE", "DRAIN", "CIRCLE", "SOFT", 160, 280,
+                  130, 180, 70,
+                  {"inv": ("CROSS", "WOBBLE", "EMBERS", "GRADIENT"), "prayer": ("VERTICAL_BAND", "NONE", "SNOW", "WHOLE"),
+                   "spell": ("SQUARE", "SPIN", "SPARKLES", "GLOW")})
+    ocean = theme(color(80, 220, 255, 230), color(40, 140, 255, 230), color(30, 160, 255, 70), color(0, 15, 35, 125),
+                  color(255, 150, 90, 230), color(140, 255, 230, 230), color(90, 200, 255, 90),
+                  color(40, 150, 255, 40), color(0, 25, 50, 70), color(80, 200, 255, 30), color(0, 20, 45, 70),
+                  color(0, 50, 110, 60), color(200, 240, 255, 220), "SHRINK", "PULSE", "RING", "SMOOTH", 180, 320,
+                  140, 150, 60,
+                  {"inv": ("ELLIPSE", "WOBBLE", "RIPPLES", "GRADIENT"),
+                   "prayer": ("HORIZONTAL_BAND", "WOBBLE", "SNOW", "WHOLE"), "spell": ("CIRCLE", "NONE", "RIPPLES", "GLOW")})
+    aurora = theme(color(110, 255, 190, 230), color(255, 120, 230, 230), color(120, 255, 200, 70),
+                   color(0, 15, 25, 120), color(255, 90, 140, 230), color(170, 255, 220, 230),
+                   color(180, 140, 255, 90), color(140, 120, 255, 40), color(10, 20, 40, 70),
+                   color(160, 255, 220, 30), color(5, 15, 35, 70), color(80, 30, 120, 60), color(200, 255, 230, 230),
+                   "GROW", "COLOR", "DIAMOND", "BANDED", 160, 400, 180, 170, 90,
+                   {"inv": ("RADAR", "SPIN", "SPARKLES", "GRADIENT"), "prayer": ("SPIRAL", "SPIN", "ORBIT", "GLOW"),
+                    "spell": ("FLOWER", "WOBBLE", "SPARKLES", "GRADIENT")})
+    moon = theme(color(225, 230, 240, 230), color(200, 40, 60, 230), color(170, 20, 40, 70), color(15, 0, 5, 135),
+                 color(255, 60, 80, 230), color(240, 240, 255, 230), color(220, 220, 235, 80),
+                 color(180, 30, 50, 35), color(30, 5, 10, 75), color(220, 220, 235, 25), color(20, 0, 5, 70),
+                 color(70, 0, 15, 60), color(255, 120, 130, 220), "CROSS", "DRAIN", "TRIANGLE", "SHARP", 140, 260,
+                 120, 140, 100,
+                 {"inv": ("CIRCLE", "NONE", "EMBERS", "GRADIENT"), "prayer": ("STAR", "SPIN", "RIPPLES", "GLOW"),
+                  "spell": ("HEXAGON", "WOBBLE", "EMBERS", "GRADIENT")})
+    noir = theme(color(245, 245, 245, 235), color(160, 160, 160, 230), color(255, 255, 255, 55), color(0, 0, 0, 140),
+                 color(255, 255, 255, 230), color(255, 255, 255, 230), color(255, 255, 255, 80),
+                 color(255, 255, 255, 30), color(0, 0, 0, 80), color(255, 255, 255, 25), color(0, 0, 0, 80),
+                 color(40, 40, 40, 60), color(240, 240, 240, 220), "CROSS", "PULSE", "SQUARE", "SHARP", 150, 300,
+                 200, 140, 75,
+                 {"inv": ("SQUARE", "NONE", "SNOW", "WHOLE"), "prayer": ("CROSS", "NONE", "RIPPLES", "GLOW"),
+                  "spell": ("DIAMOND", "SPIN", "SPARKLES", "GRADIENT")})
+    return [("Toxic Swamp", toxic), ("Ocean Depths", ocean), ("Aurora", aurora), ("Blood Moon", moon),
+            ("Monochrome Noir", noir)]
 
 
 def spotlight(tab, values):
@@ -373,7 +339,7 @@ def showcase():
 def main():
     now = int(time.time() * 1000)
     out = {}
-    for slot, (name, settings) in enumerate(loadouts() + involved() + showcase()):
+    for slot, (name, settings) in enumerate(themed() + involved() + showcase()):
         export = {"plugin": "click-helpers", "version": 1, "settings": settings}
         # Older first, so the browser's newest-first sort keeps this order
         out[str(slot)] = {"name": name + " (Default)", "created": now - slot * 1000, "settings": json.dumps(export)}

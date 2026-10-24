@@ -193,10 +193,10 @@ game to publish, and names with bad words are refused and cleared.
   count; a new loadout starts at 0
 - **Small x**: shows on your own loadouts in the browser and deletes that one
 - **Defaults**: twelve starter loadouts marked **(Default)** by the author
-  **Default** (in green), always listed first: Clean Outline, PvP Switcher,
-  Prayer Flicker, High Contrast, Spotlight Sparkle, Ember Forge, Frost Bite,
-  Arcane Radar, Neon Disco, Tick Perfect PvM, and two that set every section
-  but the personal ones, Cosmic Void and Solar Flare. No player can publish
+  **Default** (in green), always listed first. Seven set every section but the
+  personal ones: Toxic Swamp, Ocean Depths, Aurora, Blood Moon, Monochrome Noir,
+  Cosmic Void and Solar Flare. Five focus on a few: Ember Forge, Frost Bite,
+  Arcane Radar, Neon Disco and Tick Perfect PvM. No player can publish
   as Default or use the word in a loadout name
 - **Load** asks which of its sections to take, then adds it as a new loadout or
   applies it over your current settings. Tick **Clear other settings** to put
