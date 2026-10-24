@@ -285,10 +285,95 @@ def involved():
     ]
 
 
+def complete(theme):
+    """
+    A loadout that sets every section a player would style: all but the click chart,
+    switch practice and import/export, which are personal. The theme gives the
+    colors, plus each tab's spotlight look as (type, motion, effect, effect area).
+    """
+    accent, glow, dim, miss = theme["accent"], theme["glow"], theme["dim"], theme["miss"]
+    settings = {
+        "Areas": text({"roundedAreas": True, "prayers": True, "spells": True, "bankInventory": True,
+                       "hideWhenEmpty": False, "onlyItems": True, "grid": "IN_PANEL", "gridShowEmpty": False,
+                       "gridColor": theme["grid"]}),
+        "Click feedback": text({"clickFlash": True, "clickMarker": True, "clickFlashColor": theme["flash"],
+                                "clickFlashDuration": 170, "clickMarkerColor": accent,
+                                "doubleClickColor": theme["second"]}),
+        "Missed clicks": text({"deadClickMarker": True, "rejectedClickMarker": True, "missOutline": True,
+                               "misclickColor": miss, "rejectedClickColor": theme["refused"],
+                               "ringAnimation": theme["ring"], "ringDuration": 550, "missOutlineColor": miss,
+                               "missOutlineDuration": 1300, "missOutlineWidth": 2}),
+        "Dead areas": text({"deadAreas": "IN_PANEL", "deadInventory": True, "deadInventoryColor": theme["dead"],
+                            "deadBank": True, "deadBankColor": theme["dead"], "deadPrayers": True,
+                            "deadPrayersColor": theme["dead"], "deadSpells": True, "deadSpellsColor": theme["dead"],
+                            "deadOuterAreas": False}),
+        "Prayers and spells": text({"activePrayers": True, "pendingPrayers": True, "selectedSpell": True,
+                                    "autocastMarker": True, "activePrayerColor": accent,
+                                    "activePrayerFill": theme["fill"], "autocastColor": theme["second"]}),
+        "Tick cue": text({"tickCue": theme["cue"], "tickCueAllPrayers": False,
+                          "cuePrayers": "Protect from Magic, Protect from Missiles, Protect from Melee",
+                          "pulseColor": theme["second"], "tickLatency": 20, "pulsePosition": 40}),
+        "Hide items": text({"hideItems": False, "hiddenItemShowOutline": True, "hiddenItemShowFill": True,
+                            "hiddenItemOutline": accent, "hiddenItemFill": theme["fill"]}),
+        "Eat and drink delay": text({"cooldowns": True, "cooldownStyle": "DIM", "cooldownColor": dim,
+                                     "cooldownOutline": True, "cooldownOutlineStyle": "TRACE",
+                                     "cooldownOutlineColor": theme["second"], "cooldownOutlineWidth": 2}),
+    }
+    for tab in TABS:
+        kind, motion, effect, area = theme["looks"][tab]
+        settings[TAB_SECTIONS[tab] + ": hover"] = text({
+            tab + "Style": "BOTH", tab + "OutlineColor": accent, tab + "FillColor": theme["fill"],
+            tab + "OutlineWidth": 2, tab + "CornerRadius": 5, tab + "HoverFade": 250, tab + "HoverDelay": 0,
+            tab + "HideWhenMenuOpen": True, tab + "DiscoMode": False, tab + "DiscoInterval": 0,
+            tab + "KeepIconColors": True, tab + "SlotBackground": True, tab + "SlotBackgroundColor": theme["slot"]})
+        settings.update(spotlight(tab, {
+            "": True, "Radius": theme["radius"], "Dim": dim, "Glow": glow, "GlowSize": 45, "Shape": theme["shape"],
+            "Type": kind, "Motion": motion, "EffectColor": area, "EffectReplace": False,
+            **burst(effect, theme["particle"], reach=theme["reach"], spread=theme["spread"], amount=theme["amount"],
+                    length=1300, speed=theme["speed"], size=110),
+            "ClickResult": True, "ClickSuccessColor": theme["hit"], "ClickMissColor": miss,
+            "ClickRefusedColor": theme["refused"], "Always": False, "DeadOnly": True,
+            "Falloff": True, "FalloffDistance": theme["radius"] + 40, "FalloffEnd": theme["radius"] * 3,
+            "FalloffColor": theme["falloff"], "FalloffColorEnd": 0, "FadeEndColor": color(0, 0, 0, 0),
+        }))
+        settings.update(miss_dots(tab, miss, theme["dot"], size=5, hollow=tab != "inv"))
+    settings["Inventory: spotlight"].update(text({"invSpotlightClickAnywhere": True,
+                                                 "invSpotlightClickAnywherePanels": True,
+                                                 "invSpotlightClickAnywhereDelay": 300}))
+    return settings
+
+
+def showcase():
+    """Two loadouts that set every section, to show what the plugin can do together."""
+    void = complete({
+        "accent": color(120, 230, 255, 230), "second": color(200, 120, 255, 230), "glow": color(110, 60, 255, 70),
+        "dim": color(5, 0, 25, 130), "miss": color(255, 70, 160, 230), "refused": color(150, 150, 170, 210),
+        "hit": color(120, 255, 220, 230), "flash": color(150, 120, 255, 90), "fill": color(110, 80, 255, 40),
+        "slot": color(20, 10, 50, 70), "grid": color(140, 120, 255, 35), "dead": color(10, 0, 30, 70),
+        "falloff": color(30, 10, 80, 60), "particle": color(200, 230, 255, 230), "ring": "SHRINK",
+        "cue": "COLOR", "dot": "DIAMOND", "shape": "BANDED", "radius": 150, "reach": 350, "spread": 160,
+        "amount": 160, "speed": 80,
+        "looks": {"inv": ("SPIRAL", "SPIN", "SPARKLES", "GRADIENT"), "prayer": ("STAR", "SPIN", "ORBIT", "GLOW"),
+                  "spell": ("RINGS", "WOBBLE", "RIPPLES", "GRADIENT")},
+    })
+    solar = complete({
+        "accent": color(255, 200, 70, 235), "second": color(255, 110, 40, 230), "glow": color(255, 150, 40, 75),
+        "dim": color(30, 10, 0, 120), "miss": color(255, 50, 30, 230), "refused": color(170, 160, 150, 210),
+        "hit": color(255, 240, 140, 230), "flash": color(255, 190, 80, 100), "fill": color(255, 170, 40, 40),
+        "slot": color(50, 25, 0, 70), "grid": color(255, 190, 90, 35), "dead": color(40, 15, 0, 70),
+        "falloff": color(120, 40, 0, 60), "particle": color(255, 190, 90, 230), "ring": "PULSE",
+        "cue": "PULSE", "dot": "PLUS", "shape": "SOFT", "radius": 170, "reach": 300, "spread": 110,
+        "amount": 200, "speed": 110,
+        "looks": {"inv": ("FLOWER", "SPIN", "EMBERS", "GRADIENT"), "prayer": ("HEXAGON", "NONE", "RIPPLES", "GLOW"),
+                  "spell": ("DIAMOND", "WOBBLE", "EMBERS", "WHOLE")},
+    })
+    return [("Cosmic Void", void), ("Solar Flare", solar)]
+
+
 def main():
     now = int(time.time() * 1000)
     out = {}
-    for slot, (name, settings) in enumerate(loadouts() + involved()):
+    for slot, (name, settings) in enumerate(loadouts() + involved() + showcase()):
         export = {"plugin": "click-helpers", "version": 1, "settings": settings}
         # Older first, so the browser's newest-first sort keeps this order
         out[str(slot)] = {"name": name + " (Default)", "created": now - slot * 1000, "settings": json.dumps(export)}
