@@ -1485,7 +1485,17 @@ class InventoryHoverHighlightOverlay extends Overlay
 			return;
 		}
 
-		Shape screen = new Rectangle(0, 0, client.getCanvasWidth(), client.getCanvasHeight());
+		// Kept off the slots of panels set to Only dead areas, as their own effects are
+		Area screen = new Area(new Rectangle(0, 0, client.getCanvasWidth(), client.getCanvasHeight()));
+		for (Panel panel : panels)
+		{
+			if (tabOf(panel.kind).spotlightDeadOnly)
+			{
+				Area slots = new Area(panel.area);
+				slots.subtract(deadArea(panel));
+				screen.subtract(slots);
+			}
+		}
 		double length = lengthNanos / 1e9;
 		double speed = Math.max(10, tab.spotlightEffectSpeed) / 100.0;
 		for (Burst burst : worldBursts)

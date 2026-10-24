@@ -2137,9 +2137,10 @@ public interface InventoryHoverHighlightConfig extends Config
 	@ConfigItem(
 		keyName = "invSpotlightClickAnywherePanels",
 		hidden = true,
-		name = "Same effect in inventory",
-		description = "With Click effects anywhere, clicks in the inventory play the same effect as clicks outside it,"
-			+ " across the screen and with the same delay, in place of the inventory's own effect",
+		name = "Include inventory clicks",
+		description = "With Click effects anywhere, clicks in the inventory play the click anywhere effect too, free to"
+			+ " spread past the inventory, in place of the inventory's own effect. Only dead areas still keeps it off"
+			+ " the slots",
 		position = 26,
 		section = invSpotlightSection
 	)
