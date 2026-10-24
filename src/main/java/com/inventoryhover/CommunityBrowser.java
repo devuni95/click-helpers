@@ -425,9 +425,15 @@ class CommunityBrowser extends JFrame
 		String scope = sections == null ? "" : " (" + sections.size() + " of " + entry.sections.size() + " sections)";
 
 		String[] options = {"Add as new loadout", "Replace current settings", "Cancel"};
-		int answer = JOptionPane.showOptionDialog(this,
-			"How do you want to load " + entry + scope + "?\n\nAdd as new loadout keeps your current settings and adds"
-				+ " it to your loadouts list.\nReplace current settings applies it now.",
+		JCheckBox clearOthers = new JCheckBox("Clear other settings");
+		clearOthers.setToolTipText("With Replace current settings, put every setting the loadout does not set back to its default");
+		JPanel question = new JPanel(new BorderLayout(0, 8));
+		question.setOpaque(false);
+		question.add(new JLabel("<html>How do you want to load " + entry + scope + "?<br><br>Add as new loadout keeps your"
+			+ " current settings and adds it to your loadouts list.<br>Replace current settings applies it now; tick"
+			+ " Clear other settings to put everything it does not set back to its default.</html>"), BorderLayout.CENTER);
+		question.add(clearOthers, BorderLayout.SOUTH);
+		int answer = JOptionPane.showOptionDialog(this, question,
 			"Load community loadout", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 		if (answer == 0)
 		{
@@ -445,7 +451,7 @@ class CommunityBrowser extends JFrame
 		}
 		else if (answer == 1)
 		{
-			String message = plugin.community().load(entry, sections);
+			String message = plugin.community().load(entry, sections, clearOthers.isSelected());
 			status.setText(message);
 			if (message.startsWith("Loaded"))
 			{

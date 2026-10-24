@@ -104,8 +104,11 @@ class ClickHelpersPanel extends PluginPanel
 		JPanel loadoutButtons = new JPanel(new GridLayout(1, 2, 6, 0));
 		JButton load = new JButton("Load");
 		load.setToolTipText("Apply the picked loadout");
+		JCheckBox clearOthers = new JCheckBox("Clear other settings");
+		clearOthers.setToolTipText("When loading, put every setting the loadout does not set back to its default");
 		load.addActionListener(e ->
-			loadoutStatus.setText(wrap(plugin.loadouts().loadLoadout((String) loadoutBox.getSelectedItem()))));
+			loadoutStatus.setText(wrap(plugin.loadouts().loadLoadout((String) loadoutBox.getSelectedItem(), null,
+				clearOthers.isSelected()))));
 		JButton delete = new JButton("Delete");
 		delete.setToolTipText("Delete the picked loadout");
 		delete.addActionListener(e ->
@@ -127,6 +130,7 @@ class ClickHelpersPanel extends PluginPanel
 		loadoutButtons.add(load);
 		loadoutButtons.add(delete);
 		settingsTab.add(left(loadoutButtons));
+		settingsTab.add(left(clearOthers));
 
 		settingsTab.add(left(fieldLabel("Save current settings as")));
 		loadoutName.setToolTipText("Fills in with the picked loadout, so saving updates it; type a new name for a new loadout");

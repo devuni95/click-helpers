@@ -197,7 +197,8 @@ game to publish, and names with bad words are refused and cleared.
   Prayer Flicker, High Contrast and Spotlight Sparkle. No player can publish
   as Default or use the word in a loadout name
 - **Load** asks which of its sections to take, then adds it as a new loadout or
-  applies it over your current settings
+  applies it over your current settings. Tick **Clear other settings** to put
+  everything it does not set back to its default
 
 Loading a community loadout only changes Click Helpers settings, and never
 turns network features on.
@@ -222,7 +223,9 @@ Your game name is sent only when you untick **Anonymous** and publish. Setup and
   filters as you type and Expand all / Collapse all buttons. Values update the
   moment they change, tab sync included. Right-click a setting to reset it
 - **Loadouts tab**: Export and Import buttons; named loadouts that save every
-  current setting and load or delete them from a dropdown; the Community section;
+  current setting and load or delete them from a dropdown, with **Clear other
+  settings** to put anything a loadout does not set back to its default; the
+  Community section;
   and **Randomize all settings**, which randomizes every setting except the click
   chart, hotkeys, text lists, tab sync and practice, each tab on its own.
   Loadouts are kept in RuneLite's config, not in files

@@ -378,12 +378,22 @@ class SettingsSharing
 	/** Applies some sections of a saved loadout, or all of them when {@code sections} is null; returns a message. */
 	String loadLoadout(String name, Set<String> sections)
 	{
+		return loadLoadout(name, sections, false);
+	}
+
+	/**
+	 * Applies some sections of a saved loadout, or all of them when {@code sections}
+	 * is null. With {@code clearOthers}, every setting it does not set goes back to
+	 * its default. Returns a message.
+	 */
+	String loadLoadout(String name, Set<String> sections, boolean clearOthers)
+	{
 		JsonObject all = loadouts();
 		if (name == null || !all.has(name))
 		{
 			return "Pick a loadout to load.";
 		}
-		int applied = importJson(onlySections(gson.toJson(all.get(name)), sections));
+		int applied = importJson(onlySections(gson.toJson(all.get(name)), sections), clearOthers);
 		configManager.setConfiguration(InventoryHoverHighlightConfig.GROUP, CURRENT_KEY, name);
 		return "Loaded loadout " + name + " (" + applied + " settings).";
 	}
@@ -574,16 +584,23 @@ class SettingsSharing
 	/** Applies settings from a published loadout; returns how many were applied. Unknown keys are skipped. */
 	int importShared(String json, Set<String> sections)
 	{
-		return importShared(onlySections(json, sections));
+		return importShared(json, sections, false);
+	}
+
+	/** Like {@link #importShared(String, Set)}; with {@code clearOthers}, every setting it does not set goes back to its default. */
+	int importShared(String json, Set<String> sections, boolean clearOthers)
+	{
+		String only = onlySections(json, sections);
+		if (only == null || only.length() > MAX_IMPORT_CHARS)
+		{
+			throw new JsonParseException("Not Click Helpers settings");
+		}
+		return importJson(only, clearOthers);
 	}
 
 	int importShared(String json)
 	{
-		if (json == null || json.length() > MAX_IMPORT_CHARS)
-		{
-			throw new JsonParseException("Not Click Helpers settings");
-		}
-		return importJson(json);
+		return importShared(json, null, false);
 	}
 
 	private String exportJson()
@@ -605,6 +622,16 @@ class SettingsSharing
 	 * grouped by section or flat. Unknown keys are skipped.
 	 */
 	private int importJson(String json)
+	{
+		return importJson(json, false);
+	}
+
+	/**
+	 * Applies exported settings; returns how many were applied. With
+	 * {@code clearOthers}, every known setting the JSON does not set goes back to
+	 * its default, so the result matches the loadout alone.
+	 */
+	private int importJson(String json, boolean clearOthers)
 	{
 		JsonObject root = gson.fromJson(json, JsonObject.class);
 		if (root == null || !root.has("plugin") || !EXPORT_MARKER.equals(root.get("plugin").getAsString())
@@ -644,6 +671,16 @@ class SettingsSharing
 				{
 					configManager.setConfiguration(InventoryHoverHighlightConfig.GROUP, entry.getKey(), entry.getValue());
 					applied++;
+				}
+			}
+			if (clearOthers)
+			{
+				for (String key : known)
+				{
+					if (!values.containsKey(key))
+					{
+						configManager.unsetConfiguration(InventoryHoverHighlightConfig.GROUP, key);
+					}
 				}
 			}
 		}

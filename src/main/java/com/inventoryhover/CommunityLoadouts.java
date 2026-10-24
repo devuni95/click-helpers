@@ -378,13 +378,20 @@ class CommunityLoadouts
 	/** Applies some sections of a published loadout, or all of it when {@code sections} is null; returns a message. */
 	String load(Entry entry, java.util.Set<String> sections)
 	{
+		return load(entry, sections, false);
+	}
+
+	/** Like {@link #load(Entry, java.util.Set)}; with {@code clearOthers}, settings it does not set go back to their defaults. */
+	String load(Entry entry, java.util.Set<String> sections, boolean clearOthers)
+	{
 		if (entry == null)
 		{
 			return "Pick a loadout to load.";
 		}
 		try
 		{
-			return "Loaded " + entry.name + " (" + sharing.importShared(entry.settings, sections) + " settings).";
+			return "Loaded " + entry.name + " (" + sharing.importShared(entry.settings, sections, clearOthers) + " settings"
+				+ (clearOthers ? ", others back to defaults" : "") + ").";
 		}
 		catch (RuntimeException e)
 		{
