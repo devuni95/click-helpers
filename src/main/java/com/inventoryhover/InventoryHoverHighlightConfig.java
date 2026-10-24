@@ -2134,6 +2134,20 @@ public interface InventoryHoverHighlightConfig extends Config
 		return false;
 	}
 
+	@ConfigItem(
+		keyName = "invSpotlightClickAnywherePanels",
+		hidden = true,
+		name = "Same effect in inventory",
+		description = "With Click effects anywhere, clicks in the inventory play the same effect as clicks outside it,"
+			+ " across the screen and with the same delay, in place of the inventory's own effect",
+		position = 26,
+		section = invSpotlightSection
+	)
+	default boolean invSpotlightClickAnywherePanels()
+	{
+		return false;
+	}
+
 	@Range(
 		min = 0,
 		max = 10000
@@ -2145,7 +2159,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		name = "Click anywhere delay",
 		description = "Shortest time between click effects outside the panels; clicks sooner than this play nothing."
 			+ " 0 plays one for every click",
-		position = 26,
+		position = 27,
 		section = invSpotlightSection
 	)
 	default int invSpotlightClickAnywhereDelay()
@@ -2158,7 +2172,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "When not hovered",
 		description = "Also spotlight this panel while the mouse is outside it",
-		position = 27,
+		position = 28,
 		section = invSpotlightSection
 	)
 	default boolean invSpotlightAlways()
@@ -2171,7 +2185,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "Only dead areas",
 		description = "Only dim and light the dead areas, so slots keep their colors",
-		position = 28,
+		position = 29,
 		section = invSpotlightSection
 	)
 	default boolean invSpotlightDeadOnly()
@@ -2184,7 +2198,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "Falloff",
 		description = "Past the falloff start, run the spotlight gradient in reverse: the dim fades out, then the falloff color fades in by the falloff end",
-		position = 29,
+		position = 30,
 		section = invSpotlightSection
 	)
 	default boolean invSpotlightFalloff()
@@ -2199,7 +2213,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "Falloff start",
 		description = "Distance in pixels from the mouse where the dimming starts fading back out",
-		position = 30,
+		position = 31,
 		section = invSpotlightSection
 	)
 	default int invSpotlightFalloffDistance()
@@ -2213,7 +2227,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "Falloff end",
 		description = "Distance in pixels from the mouse where the dimming is gone; kept past the falloff start",
-		position = 31,
+		position = 32,
 		section = invSpotlightSection
 	)
 	default int invSpotlightFalloffEnd()
@@ -2228,7 +2242,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		name = "Falloff color",
 		description = "Color the falloff turns into by the falloff end, mirroring the glow at the mouse; kept beyond it."
 			+ " Leave its alpha at 0 for the dimming to just fade out",
-		position = 32,
+		position = 33,
 		section = invSpotlightSection
 	)
 	default Color invSpotlightFalloffColor()
@@ -2246,7 +2260,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		name = "Falloff color end",
 		description = "Distance in pixels from the mouse where the falloff color has faded back out, over the same"
 			+ " length it took to fade in. 0 keeps the falloff color out to the panel's edges",
-		position = 33,
+		position = 34,
 		section = invSpotlightSection
 	)
 	default int invSpotlightFalloffColorEnd()
@@ -2261,7 +2275,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		name = "Fade end color",
 		description = "Color the falloff color blends into at the falloff color end, kept beyond it. Fully see-through"
 			+ " (the default) fades it out to nothing. Needs a falloff color end",
-		position = 34,
+		position = 35,
 		section = invSpotlightSection
 	)
 	default Color invSpotlightFadeEndColor()

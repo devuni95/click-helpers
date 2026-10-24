@@ -1415,11 +1415,24 @@ class InventoryHoverHighlightOverlay extends Overlay
 	private long worldClickSeen;
 	private long lastWorldBurst;
 
+	/** Whether clicks anywhere play the inventory's effect. */
+	private static boolean clicksAnywhere(TabSettings.Tab tab)
+	{
+		return tab.spotlight && tab.spotlightClickAnywhere && tab.spotlightEffectOnClick && tab.spotlightEffect != null
+			&& tab.spotlightEffect != InventoryHoverHighlightConfig.SpotlightEffect.NONE;
+	}
+
+	/** Whether a click in this panel plays the click anywhere effect in place of the panel's own. */
+	private boolean clickGoesAnywhere(Panel panel)
+	{
+		TabSettings.Tab tab = tabs.get(TabSettings.INVENTORY);
+		return tabOf(panel.kind) == tab && tab.spotlightClickAnywherePanels && clicksAnywhere(tab);
+	}
+
 	private void drawClicksAnywhere(Graphics2D graphics, List<Panel> panels)
 	{
 		TabSettings.Tab tab = tabs.get(TabSettings.INVENTORY);
-		if (!tab.spotlight || !tab.spotlightClickAnywhere || !tab.spotlightEffectOnClick || tab.spotlightEffect == null
-			|| tab.spotlightEffect == InventoryHoverHighlightConfig.SpotlightEffect.NONE)
+		if (!clicksAnywhere(tab))
 		{
 			worldBursts.clear();
 			return;
@@ -1434,7 +1447,7 @@ class InventoryHoverHighlightOverlay extends Overlay
 			long delay = Math.max(0, tab.spotlightClickAnywhereDelay) * 1_000_000L;
 			// Measured from the last burst that played, even if it has already ended
 			boolean rested = lastWorldBurst == 0 || click - lastWorldBurst >= delay;
-			if (rested && panels.stream().noneMatch(p -> p.area.contains(x, y)))
+			if (rested && panels.stream().noneMatch(p -> p.area.contains(x, y) && !clickGoesAnywhere(p)))
 			{
 				lastWorldBurst = click;
 				worldBursts.forEach(b -> b.settled = b.settled != null ? b.settled : burstResultColor(tab, b));
@@ -1509,7 +1522,7 @@ class InventoryHoverHighlightOverlay extends Overlay
 			if (click != 0 && (seen == null || seen != click))
 			{
 				burstClicks.put(key, click);
-				if (panel.area.contains(plugin.lastClickX, plugin.lastClickY))
+				if (panel.area.contains(plugin.lastClickX, plugin.lastClickY) && !clickGoesAnywhere(panel))
 				{
 					// The earlier bursts' clicks are settled now that a newer click came
 					list.forEach(b -> b.settled = b.settled != null ? b.settled : burstResultColor(tab, b));

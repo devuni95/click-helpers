@@ -72,6 +72,8 @@ class TabSettings
 		int spotlightEffectSpread;
 		/** Inventory only: click bursts outside every panel too. */
 		boolean spotlightClickAnywhere;
+		/** Inventory only: clicks in the inventory play the click anywhere effect too, in place of their own. */
+		boolean spotlightClickAnywherePanels;
 		int spotlightClickAnywhereDelay;
 		boolean spotlightAlways;
 		boolean spotlightDeadOnly;
@@ -158,6 +160,7 @@ class TabSettings
 		tab.spotlightEffectReach = read(p + "SpotlightEffectReach", int.class, 100);
 		tab.spotlightEffectSpread = read(p + "SpotlightEffectSpread", int.class, 100);
 		tab.spotlightClickAnywhere = read(p + "SpotlightClickAnywhere", boolean.class, false);
+		tab.spotlightClickAnywherePanels = read(p + "SpotlightClickAnywherePanels", boolean.class, false);
 		tab.spotlightClickAnywhereDelay = read(p + "SpotlightClickAnywhereDelay", int.class, 600);
 		tab.spotlightAlways = read(p + "SpotlightAlways", boolean.class, false);
 		tab.spotlightDeadOnly = read(p + "SpotlightDeadOnly", boolean.class, false);
