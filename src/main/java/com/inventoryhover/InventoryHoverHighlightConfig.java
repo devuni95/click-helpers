@@ -2103,7 +2103,7 @@ public interface InventoryHoverHighlightConfig extends Config
 
 	@Range(
 		min = 25,
-		max = 400
+		max = 1000
 	)
 	@Units(Units.PERCENT)
 	@ConfigItem(
@@ -2912,7 +2912,7 @@ public interface InventoryHoverHighlightConfig extends Config
 
 	@Range(
 		min = 25,
-		max = 400
+		max = 1000
 	)
 	@Units(Units.PERCENT)
 	@ConfigItem(
@@ -3673,7 +3673,7 @@ public interface InventoryHoverHighlightConfig extends Config
 
 	@Range(
 		min = 25,
-		max = 400
+		max = 1000
 	)
 	@Units(Units.PERCENT)
 	@ConfigItem(

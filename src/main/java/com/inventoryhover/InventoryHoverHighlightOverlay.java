@@ -1643,7 +1643,7 @@ class InventoryHoverHighlightOverlay extends Overlay
 		if (detached)
 		{
 			// Twice the spread means twice the gap between particles, so a quarter as many over the same area
-			float spread = Math.max(25, Math.min(400, tab.spotlightEffectSpread)) / 100f;
+			float spread = Math.max(25, Math.min(1000, tab.spotlightEffectSpread)) / 100f;
 			particles = Math.max(1, Math.min(MAX_PARTICLES, Math.round(particles / (spread * spread))));
 		}
 		float cx = mouse.getX();
