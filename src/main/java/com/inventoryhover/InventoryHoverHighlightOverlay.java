@@ -1429,6 +1429,28 @@ class InventoryHoverHighlightOverlay extends Overlay
 		return tabOf(panel.kind) == tab && tab.spotlightClickAnywherePanels && clicksAnywhere(tab);
 	}
 
+	/**
+	 * Whether a click in this panel may start a burst under the click anywhere
+	 * delay. With Click effects anywhere on, inventory clicks share that delay
+	 * with clicks outside, so fast clicking cannot stack up bursts; other panels
+	 * and the inventory without it are never held back. Counts the burst as played.
+	 */
+	private boolean restedForAnywhere(Panel panel, long click)
+	{
+		TabSettings.Tab tab = tabs.get(TabSettings.INVENTORY);
+		if (tabOf(panel.kind) != tab || !clicksAnywhere(tab))
+		{
+			return true;
+		}
+		long delay = Math.max(0, tab.spotlightClickAnywhereDelay) * 1_000_000L;
+		if (lastWorldBurst != 0 && click - lastWorldBurst < delay)
+		{
+			return false;
+		}
+		lastWorldBurst = click;
+		return true;
+	}
+
 	private void drawClicksAnywhere(Graphics2D graphics, List<Panel> panels)
 	{
 		TabSettings.Tab tab = tabs.get(TabSettings.INVENTORY);
@@ -1522,7 +1544,8 @@ class InventoryHoverHighlightOverlay extends Overlay
 			if (click != 0 && (seen == null || seen != click))
 			{
 				burstClicks.put(key, click);
-				if (panel.area.contains(plugin.lastClickX, plugin.lastClickY) && !clickGoesAnywhere(panel))
+				if (panel.area.contains(plugin.lastClickX, plugin.lastClickY) && !clickGoesAnywhere(panel)
+					&& restedForAnywhere(panel, click))
 				{
 					// The earlier bursts' clicks are settled now that a newer click came
 					list.forEach(b -> b.settled = b.settled != null ? b.settled : burstResultColor(tab, b));

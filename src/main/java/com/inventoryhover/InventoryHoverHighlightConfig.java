@@ -2157,8 +2157,8 @@ public interface InventoryHoverHighlightConfig extends Config
 		keyName = "invSpotlightClickAnywhereDelay",
 		hidden = true,
 		name = "Click anywhere delay",
-		description = "Shortest time between click effects outside the panels; clicks sooner than this play nothing."
-			+ " 0 plays one for every click",
+		description = "Shortest time between click effects outside the panels and in the inventory, which share it;"
+			+ " clicks sooner than this play nothing. 0 plays one for every click",
 		position = 27,
 		section = invSpotlightSection
 	)

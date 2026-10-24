@@ -262,7 +262,8 @@ sections of their own:
     **Effect size** scale it, and **Effect amount** sets how many particles it
     draws
   - **Click effects anywhere** (inventory only): clicks outside the panels, such as
-    on the game world, play the effect too, at most once per **Click anywhere delay**
+    on the game world, play the effect too, at most once per **Click anywhere delay**,
+    which inventory clicks share
   - **Same effect in inventory**: with Click effects anywhere, inventory clicks play
     that same effect across the screen, in place of the inventory's own
 - **Miss dots**: a dot at every dead click, with color, shape (circle, ring,
