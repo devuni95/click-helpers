@@ -119,7 +119,7 @@ def loadouts():
             "invSpotlightShape": "SMOOTH", "invSpotlightType": "CIRCLE", "invSpotlightMotion": "NONE",
             "invSpotlightEffect": "SPARKLES", "invSpotlightEffectColor": "OVERLAY",
             "invSpotlightEffectOnClick": True, "invSpotlightEffectDetach": True,
-            "invSpotlightEffectReach": 200, "invSpotlightEffectSpread": 60,
+            "invSpotlightEffectReach": 200, "invSpotlightEffectSpread": 150,
             "invSpotlightEffectLength": 900, "invSpotlightEffectSpeed": 100, "invSpotlightEffectSize": 100,
             "invSpotlightClickResult": True, "invSpotlightClickAnywhere": True,
             "invSpotlightClickAnywhereDelay": 0, "invSpotlightAlways": False,

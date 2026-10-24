@@ -2084,21 +2084,22 @@ public interface InventoryHoverHighlightConfig extends Config
 	}
 
 	@Range(
-		max = 100
+		min = 25,
+		max = 400
 	)
 	@Units(Units.PERCENT)
 	@ConfigItem(
 		keyName = "invSpotlightEffectSpread",
 		hidden = true,
 		name = "Detached spread",
-		description = "How much a detached effect grows out from where it started over its length: 0% is full"
-			+ " size the whole time, 100% starts at the click and spreads out to its reach",
+		description = "How far apart a detached effect's particles, such as snowflakes or sparkles, are: 100% is"
+			+ " normal, higher spreads them out with fewer over the same area",
 		position = 23,
 		section = invSpotlightSection
 	)
 	default int invSpotlightEffectSpread()
 	{
-		return 0;
+		return 100;
 	}
 
 	@ConfigItem(
@@ -2859,21 +2860,22 @@ public interface InventoryHoverHighlightConfig extends Config
 	}
 
 	@Range(
-		max = 100
+		min = 25,
+		max = 400
 	)
 	@Units(Units.PERCENT)
 	@ConfigItem(
 		keyName = "prayerSpotlightEffectSpread",
 		hidden = true,
 		name = "Detached spread",
-		description = "How much a detached effect grows out from where it started over its length: 0% is full"
-			+ " size the whole time, 100% starts at the click and spreads out to its reach",
+		description = "How far apart a detached effect's particles, such as snowflakes or sparkles, are: 100% is"
+			+ " normal, higher spreads them out with fewer over the same area",
 		position = 23,
 		section = prayerSpotlightSection
 	)
 	default int prayerSpotlightEffectSpread()
 	{
-		return 0;
+		return 100;
 	}
 
 	@ConfigItem(
@@ -3601,21 +3603,22 @@ public interface InventoryHoverHighlightConfig extends Config
 	}
 
 	@Range(
-		max = 100
+		min = 25,
+		max = 400
 	)
 	@Units(Units.PERCENT)
 	@ConfigItem(
 		keyName = "spellSpotlightEffectSpread",
 		hidden = true,
 		name = "Detached spread",
-		description = "How much a detached effect grows out from where it started over its length: 0% is full"
-			+ " size the whole time, 100% starts at the click and spreads out to its reach",
+		description = "How far apart a detached effect's particles, such as snowflakes or sparkles, are: 100% is"
+			+ " normal, higher spreads them out with fewer over the same area",
 		position = 23,
 		section = spellSpotlightSection
 	)
 	default int spellSpotlightEffectSpread()
 	{
-		return 0;
+		return 100;
 	}
 
 	@ConfigItem(

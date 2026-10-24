@@ -66,7 +66,7 @@ class TabSettings
 		boolean spotlightEffectDetach;
 		/** How far detached effects reach, in percent of the band they would fill on the mouse. */
 		int spotlightEffectReach;
-		/** How much detached effects grow out from where they started over their length, in percent. */
+		/** How far apart detached effects' particles are, in percent of the normal gap. */
 		int spotlightEffectSpread;
 		/** Inventory only: click bursts outside every panel too. */
 		boolean spotlightClickAnywhere;
@@ -153,7 +153,7 @@ class TabSettings
 		tab.spotlightEffectSize = read(p + "SpotlightEffectSize", int.class, 100);
 		tab.spotlightEffectDetach = read(p + "SpotlightEffectDetach", boolean.class, false);
 		tab.spotlightEffectReach = read(p + "SpotlightEffectReach", int.class, 100);
-		tab.spotlightEffectSpread = read(p + "SpotlightEffectSpread", int.class, 0);
+		tab.spotlightEffectSpread = read(p + "SpotlightEffectSpread", int.class, 100);
 		tab.spotlightClickAnywhere = read(p + "SpotlightClickAnywhere", boolean.class, false);
 		tab.spotlightClickAnywhereDelay = read(p + "SpotlightClickAnywhereDelay", int.class, 600);
 		tab.spotlightAlways = read(p + "SpotlightAlways", boolean.class, false);
