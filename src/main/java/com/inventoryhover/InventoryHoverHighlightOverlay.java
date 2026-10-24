@@ -1591,8 +1591,9 @@ class InventoryHoverHighlightOverlay extends Overlay
 		}
 		// Keep about the same density when the band reaches past the spotlight, such as out to the falloff color
 		float reach = Math.min(6f, radius / Math.max(1f, tab.spotlightRadius));
-		int particles = Math.min(MAX_PARTICLES,
-			(int) ((replacing ? PARTICLES * 3 : PARTICLES) * Math.max(1f, reach * reach)));
+		float amount = Math.max(10, Math.min(400, tab.spotlightEffectAmount)) / 100f;
+		int particles = Math.max(1, Math.min(MAX_PARTICLES,
+			(int) ((replacing ? PARTICLES * 3 : PARTICLES) * Math.max(1f, reach * reach) * amount)));
 		if (detached)
 		{
 			// Twice the spread means twice the gap between particles, so a quarter as many over the same area

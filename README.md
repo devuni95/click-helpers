@@ -259,7 +259,8 @@ sections of their own:
     from mouse** to let each burst play out where it started. **Detached reach**
     sets how far a detached burst reaches (up to 1000%), and **Detached spread**
     sets how far apart its particles are (up to 400%). **Effect speed** and
-    **Effect size** scale it
+    **Effect size** scale it, and **Effect amount** sets how many particles it
+    draws
   - **Click effects anywhere** (inventory only): clicks outside the panels, such as
     on the game world, play the effect too, at most once per **Click anywhere delay**
 - **Miss dots**: a dot at every dead click, with color, shape (circle, ring,

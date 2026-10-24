@@ -2049,6 +2049,24 @@ public interface InventoryHoverHighlightConfig extends Config
 		return 100;
 	}
 
+	@Range(
+		min = 10,
+		max = 400
+	)
+	@Units(Units.PERCENT)
+	@ConfigItem(
+		keyName = "invSpotlightEffectAmount",
+		hidden = true,
+		name = "Effect amount",
+		description = "How many particles, such as snowflakes or sparkles, the effect draws: 100% is normal",
+		position = 21,
+		section = invSpotlightSection
+	)
+	default int invSpotlightEffectAmount()
+	{
+		return 100;
+	}
+
 	@ConfigItem(
 		keyName = "invSpotlightEffectDetach",
 		hidden = true,
@@ -2056,7 +2074,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		description = "Let each effect run on its own where it started: where you clicked with Effect on click, else"
 			+ " where the mouse entered the panel. Each runs for the effect length wherever the mouse goes, and new"
 			+ " ones start alongside older ones",
-		position = 21,
+		position = 22,
 		section = invSpotlightSection
 	)
 	default boolean invSpotlightEffectDetach()
@@ -2075,7 +2093,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		name = "Detached reach",
 		description = "How far a detached effect reaches from where it started: 100% is as far as it reaches on"
 			+ " the mouse. Raise it for clicks anywhere to fill more of the screen",
-		position = 22,
+		position = 23,
 		section = invSpotlightSection
 	)
 	default int invSpotlightEffectReach()
@@ -2094,7 +2112,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		name = "Detached spread",
 		description = "How far apart a detached effect's particles, such as snowflakes or sparkles, are: 100% is"
 			+ " normal, higher spreads them out with fewer over the same area",
-		position = 23,
+		position = 24,
 		section = invSpotlightSection
 	)
 	default int invSpotlightEffectSpread()
@@ -2108,7 +2126,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		name = "Click effects anywhere",
 		description = "With Effect on click, clicks outside the inventory, prayer and spellbook panels, such as on the"
 			+ " game world, also play this effect where you clicked",
-		position = 24,
+		position = 25,
 		section = invSpotlightSection
 	)
 	default boolean invSpotlightClickAnywhere()
@@ -2127,7 +2145,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		name = "Click anywhere delay",
 		description = "Shortest time between click effects outside the panels; clicks sooner than this play nothing."
 			+ " 0 plays one for every click",
-		position = 25,
+		position = 26,
 		section = invSpotlightSection
 	)
 	default int invSpotlightClickAnywhereDelay()
@@ -2140,7 +2158,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "When not hovered",
 		description = "Also spotlight this panel while the mouse is outside it",
-		position = 26,
+		position = 27,
 		section = invSpotlightSection
 	)
 	default boolean invSpotlightAlways()
@@ -2153,7 +2171,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "Only dead areas",
 		description = "Only dim and light the dead areas, so slots keep their colors",
-		position = 27,
+		position = 28,
 		section = invSpotlightSection
 	)
 	default boolean invSpotlightDeadOnly()
@@ -2166,7 +2184,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "Falloff",
 		description = "Past the falloff start, run the spotlight gradient in reverse: the dim fades out, then the falloff color fades in by the falloff end",
-		position = 28,
+		position = 29,
 		section = invSpotlightSection
 	)
 	default boolean invSpotlightFalloff()
@@ -2181,7 +2199,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "Falloff start",
 		description = "Distance in pixels from the mouse where the dimming starts fading back out",
-		position = 29,
+		position = 30,
 		section = invSpotlightSection
 	)
 	default int invSpotlightFalloffDistance()
@@ -2195,7 +2213,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "Falloff end",
 		description = "Distance in pixels from the mouse where the dimming is gone; kept past the falloff start",
-		position = 30,
+		position = 31,
 		section = invSpotlightSection
 	)
 	default int invSpotlightFalloffEnd()
@@ -2210,7 +2228,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		name = "Falloff color",
 		description = "Color the falloff turns into by the falloff end, mirroring the glow at the mouse; kept beyond it."
 			+ " Leave its alpha at 0 for the dimming to just fade out",
-		position = 31,
+		position = 32,
 		section = invSpotlightSection
 	)
 	default Color invSpotlightFalloffColor()
@@ -2228,7 +2246,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		name = "Falloff color end",
 		description = "Distance in pixels from the mouse where the falloff color has faded back out, over the same"
 			+ " length it took to fade in. 0 keeps the falloff color out to the panel's edges",
-		position = 32,
+		position = 33,
 		section = invSpotlightSection
 	)
 	default int invSpotlightFalloffColorEnd()
@@ -2243,7 +2261,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		name = "Fade end color",
 		description = "Color the falloff color blends into at the falloff color end, kept beyond it. Fully see-through"
 			+ " (the default) fades it out to nothing. Needs a falloff color end",
-		position = 33,
+		position = 34,
 		section = invSpotlightSection
 	)
 	default Color invSpotlightFadeEndColor()
@@ -2825,6 +2843,24 @@ public interface InventoryHoverHighlightConfig extends Config
 		return 100;
 	}
 
+	@Range(
+		min = 10,
+		max = 400
+	)
+	@Units(Units.PERCENT)
+	@ConfigItem(
+		keyName = "prayerSpotlightEffectAmount",
+		hidden = true,
+		name = "Effect amount",
+		description = "How many particles, such as snowflakes or sparkles, the effect draws: 100% is normal",
+		position = 21,
+		section = prayerSpotlightSection
+	)
+	default int prayerSpotlightEffectAmount()
+	{
+		return 100;
+	}
+
 	@ConfigItem(
 		keyName = "prayerSpotlightEffectDetach",
 		hidden = true,
@@ -2832,7 +2868,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		description = "Let each effect run on its own where it started: where you clicked with Effect on click, else"
 			+ " where the mouse entered the panel. Each runs for the effect length wherever the mouse goes, and new"
 			+ " ones start alongside older ones",
-		position = 21,
+		position = 22,
 		section = prayerSpotlightSection
 	)
 	default boolean prayerSpotlightEffectDetach()
@@ -2851,7 +2887,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		name = "Detached reach",
 		description = "How far a detached effect reaches from where it started: 100% is as far as it reaches on"
 			+ " the mouse. Raise it for clicks anywhere to fill more of the screen",
-		position = 22,
+		position = 23,
 		section = prayerSpotlightSection
 	)
 	default int prayerSpotlightEffectReach()
@@ -2870,7 +2906,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		name = "Detached spread",
 		description = "How far apart a detached effect's particles, such as snowflakes or sparkles, are: 100% is"
 			+ " normal, higher spreads them out with fewer over the same area",
-		position = 23,
+		position = 24,
 		section = prayerSpotlightSection
 	)
 	default int prayerSpotlightEffectSpread()
@@ -2883,7 +2919,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "When not hovered",
 		description = "Also spotlight this panel while the mouse is outside it",
-		position = 24,
+		position = 25,
 		section = prayerSpotlightSection
 	)
 	default boolean prayerSpotlightAlways()
@@ -2896,7 +2932,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "Only dead areas",
 		description = "Only dim and light the dead areas, so slots keep their colors",
-		position = 25,
+		position = 26,
 		section = prayerSpotlightSection
 	)
 	default boolean prayerSpotlightDeadOnly()
@@ -2909,7 +2945,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "Falloff",
 		description = "Past the falloff start, run the spotlight gradient in reverse: the dim fades out, then the falloff color fades in by the falloff end",
-		position = 26,
+		position = 27,
 		section = prayerSpotlightSection
 	)
 	default boolean prayerSpotlightFalloff()
@@ -2924,7 +2960,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "Falloff start",
 		description = "Distance in pixels from the mouse where the dimming starts fading back out",
-		position = 27,
+		position = 28,
 		section = prayerSpotlightSection
 	)
 	default int prayerSpotlightFalloffDistance()
@@ -2938,7 +2974,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "Falloff end",
 		description = "Distance in pixels from the mouse where the dimming is gone; kept past the falloff start",
-		position = 28,
+		position = 29,
 		section = prayerSpotlightSection
 	)
 	default int prayerSpotlightFalloffEnd()
@@ -2953,7 +2989,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		name = "Falloff color",
 		description = "Color the falloff turns into by the falloff end, mirroring the glow at the mouse; kept beyond it."
 			+ " Leave its alpha at 0 for the dimming to just fade out",
-		position = 29,
+		position = 30,
 		section = prayerSpotlightSection
 	)
 	default Color prayerSpotlightFalloffColor()
@@ -2971,7 +3007,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		name = "Falloff color end",
 		description = "Distance in pixels from the mouse where the falloff color has faded back out, over the same"
 			+ " length it took to fade in. 0 keeps the falloff color out to the panel's edges",
-		position = 30,
+		position = 31,
 		section = prayerSpotlightSection
 	)
 	default int prayerSpotlightFalloffColorEnd()
@@ -2986,7 +3022,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		name = "Fade end color",
 		description = "Color the falloff color blends into at the falloff color end, kept beyond it. Fully see-through"
 			+ " (the default) fades it out to nothing. Needs a falloff color end",
-		position = 31,
+		position = 32,
 		section = prayerSpotlightSection
 	)
 	default Color prayerSpotlightFadeEndColor()
@@ -3568,6 +3604,24 @@ public interface InventoryHoverHighlightConfig extends Config
 		return 100;
 	}
 
+	@Range(
+		min = 10,
+		max = 400
+	)
+	@Units(Units.PERCENT)
+	@ConfigItem(
+		keyName = "spellSpotlightEffectAmount",
+		hidden = true,
+		name = "Effect amount",
+		description = "How many particles, such as snowflakes or sparkles, the effect draws: 100% is normal",
+		position = 21,
+		section = spellSpotlightSection
+	)
+	default int spellSpotlightEffectAmount()
+	{
+		return 100;
+	}
+
 	@ConfigItem(
 		keyName = "spellSpotlightEffectDetach",
 		hidden = true,
@@ -3575,7 +3629,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		description = "Let each effect run on its own where it started: where you clicked with Effect on click, else"
 			+ " where the mouse entered the panel. Each runs for the effect length wherever the mouse goes, and new"
 			+ " ones start alongside older ones",
-		position = 21,
+		position = 22,
 		section = spellSpotlightSection
 	)
 	default boolean spellSpotlightEffectDetach()
@@ -3594,7 +3648,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		name = "Detached reach",
 		description = "How far a detached effect reaches from where it started: 100% is as far as it reaches on"
 			+ " the mouse. Raise it for clicks anywhere to fill more of the screen",
-		position = 22,
+		position = 23,
 		section = spellSpotlightSection
 	)
 	default int spellSpotlightEffectReach()
@@ -3613,7 +3667,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		name = "Detached spread",
 		description = "How far apart a detached effect's particles, such as snowflakes or sparkles, are: 100% is"
 			+ " normal, higher spreads them out with fewer over the same area",
-		position = 23,
+		position = 24,
 		section = spellSpotlightSection
 	)
 	default int spellSpotlightEffectSpread()
@@ -3626,7 +3680,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "When not hovered",
 		description = "Also spotlight this panel while the mouse is outside it",
-		position = 24,
+		position = 25,
 		section = spellSpotlightSection
 	)
 	default boolean spellSpotlightAlways()
@@ -3639,7 +3693,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "Only dead areas",
 		description = "Only dim and light the dead areas, so slots keep their colors",
-		position = 25,
+		position = 26,
 		section = spellSpotlightSection
 	)
 	default boolean spellSpotlightDeadOnly()
@@ -3652,7 +3706,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "Falloff",
 		description = "Past the falloff start, run the spotlight gradient in reverse: the dim fades out, then the falloff color fades in by the falloff end",
-		position = 26,
+		position = 27,
 		section = spellSpotlightSection
 	)
 	default boolean spellSpotlightFalloff()
@@ -3667,7 +3721,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "Falloff start",
 		description = "Distance in pixels from the mouse where the dimming starts fading back out",
-		position = 27,
+		position = 28,
 		section = spellSpotlightSection
 	)
 	default int spellSpotlightFalloffDistance()
@@ -3681,7 +3735,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		hidden = true,
 		name = "Falloff end",
 		description = "Distance in pixels from the mouse where the dimming is gone; kept past the falloff start",
-		position = 28,
+		position = 29,
 		section = spellSpotlightSection
 	)
 	default int spellSpotlightFalloffEnd()
@@ -3696,7 +3750,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		name = "Falloff color",
 		description = "Color the falloff turns into by the falloff end, mirroring the glow at the mouse; kept beyond it."
 			+ " Leave its alpha at 0 for the dimming to just fade out",
-		position = 29,
+		position = 30,
 		section = spellSpotlightSection
 	)
 	default Color spellSpotlightFalloffColor()
@@ -3714,7 +3768,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		name = "Falloff color end",
 		description = "Distance in pixels from the mouse where the falloff color has faded back out, over the same"
 			+ " length it took to fade in. 0 keeps the falloff color out to the panel's edges",
-		position = 30,
+		position = 31,
 		section = spellSpotlightSection
 	)
 	default int spellSpotlightFalloffColorEnd()
@@ -3729,7 +3783,7 @@ public interface InventoryHoverHighlightConfig extends Config
 		name = "Fade end color",
 		description = "Color the falloff color blends into at the falloff color end, kept beyond it. Fully see-through"
 			+ " (the default) fades it out to nothing. Needs a falloff color end",
-		position = 31,
+		position = 32,
 		section = spellSpotlightSection
 	)
 	default Color spellSpotlightFadeEndColor()

@@ -63,6 +63,8 @@ class TabSettings
 		int spotlightEffectSpeed;
 		int spotlightEffectLength;
 		int spotlightEffectSize;
+		/** How many particles effects draw, in percent of normal. */
+		int spotlightEffectAmount;
 		boolean spotlightEffectDetach;
 		/** How far detached effects reach, in percent of the band they would fill on the mouse. */
 		int spotlightEffectReach;
@@ -151,6 +153,7 @@ class TabSettings
 		tab.spotlightEffectSpeed = read(p + "SpotlightEffectSpeed", int.class, 100);
 		tab.spotlightEffectLength = read(p + "SpotlightEffectLength", int.class, 1200);
 		tab.spotlightEffectSize = read(p + "SpotlightEffectSize", int.class, 100);
+		tab.spotlightEffectAmount = read(p + "SpotlightEffectAmount", int.class, 100);
 		tab.spotlightEffectDetach = read(p + "SpotlightEffectDetach", boolean.class, false);
 		tab.spotlightEffectReach = read(p + "SpotlightEffectReach", int.class, 100);
 		tab.spotlightEffectSpread = read(p + "SpotlightEffectSpread", int.class, 100);
