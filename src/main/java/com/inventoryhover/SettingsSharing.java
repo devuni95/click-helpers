@@ -276,7 +276,8 @@ class SettingsSharing
 	/**
 	 * Sets every on/off, number, color and choice setting to a random value,
 	 * with each tab randomized on its own; returns a message. The click chart,
-	 * import/export switches, hotkeys, text lists and hidden settings stay.
+	 * import/export switches, hotkeys, text lists, the miss outline width and
+	 * hidden settings stay.
 	 */
 	String randomizeAll()
 	{
@@ -288,7 +289,9 @@ class SettingsSharing
 		{
 			// Practice settings are kept as they are; the side panel's practice tab sets them
 			// Off with empty inventory would look like the plugin broke, so it is left as it is
+			// A thick miss outline hides the slot it marks, so its width is left as it is too
 			if (SKIPPED_KEYS.contains(item.key()) || item.key().equals("hideWhenEmpty")
+				|| item.key().equals("missOutlineWidth")
 				|| item.key().startsWith("practice")
 				|| NOT_RANDOMIZED_SECTIONS.contains(item.getItem().section()))
 			{

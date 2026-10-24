@@ -46,6 +46,14 @@ class CommunityLoadouts
 
 	static final int SLOTS = 10;
 
+	/**
+	 * Owner id of the default loadouts, kept under /official where only admins
+	 * write. Firebase ids are 28 characters, so no install can have this one.
+	 */
+	static final String DEFAULT_UID = "default";
+	/** Author shown on the default loadouts; players cannot publish under it. */
+	static final String DEFAULT_AUTHOR = "Default";
+
 	private static final int MAX_LISTED = 200;
 	/** The English list of the LDNOOBW project, pinned to one commit so it cannot change under us. */
 	private static final String WORD_LIST_URL = "https://cdn.jsdelivr.net/gh/LDNOOBW/"
@@ -53,6 +61,8 @@ class CommunityLoadouts
 	private static final String SIGN_UP_URL = "https://identitytoolkit.googleapis.com/v1/accounts:signUp";
 	private static final String REFRESH_URL = "https://securetoken.googleapis.com/v1/token";
 	private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+	/** What a game name may look like; the database rules check the same. */
+	private static final String PLAYER_NAME = "^[A-Za-z0-9 _-]{1,12}$";
 
 	/** Config keys with no config item, so they never show in the panel or in exports. */
 	private static final String UID_KEY = "communityUid";
@@ -66,11 +76,18 @@ class CommunityLoadouts
 		final String name;
 		final long created;
 		final String settings;
+		/** The game name the publisher chose to show, or null for the made-up author name. */
+		final String playerName;
 		/** Names of the settings sections the loadout sets, like "Click feedback". */
 		final List<String> sections;
+		/** How many other installs loaded it. */
+		int installs;
+		/** Whether this install is counted in {@link #installs}. */
+		boolean installedByMe;
 
-		Entry(String uid, int slot, String name, long created, String settings, List<String> sections)
+		Entry(String uid, int slot, String name, long created, String settings, String playerName, List<String> sections)
 		{
+			this.playerName = playerName;
 			this.sections = sections;
 			this.uid = uid;
 			this.slot = slot;
@@ -81,7 +98,17 @@ class CommunityLoadouts
 
 		String author()
 		{
-			return NameFilter.authorName(uid);
+			if (isDefault())
+			{
+				return DEFAULT_AUTHOR;
+			}
+			return playerName != null ? playerName : NameFilter.authorName(uid);
+		}
+
+		/** Whether it is one of the default loadouts that ship with the plugin's database. */
+		boolean isDefault()
+		{
+			return DEFAULT_UID.equals(uid);
 		}
 
 		@Override
@@ -146,6 +173,8 @@ class CommunityLoadouts
 				// Without the list, names are only checked for length and characters
 				loadWordList();
 				JsonElement users = getJson(DATABASE_URL + "/users.json");
+				JsonElement installs = optionalJson(DATABASE_URL + "/installs.json");
+				String me = uid();
 				List<Entry> entries = new ArrayList<>();
 				if (users != null && users.isJsonObject())
 				{
@@ -154,8 +183,13 @@ class CommunityLoadouts
 						entries.addAll(entriesOf(user.getKey(), user.getValue(), false));
 					}
 				}
+				List<Entry> defaults = entriesOf(DEFAULT_UID, optionalJson(DATABASE_URL + "/official.json"), false);
+				countInstalls(entries, installs, me);
+				countInstalls(defaults, installs, me);
 				entries.sort(Comparator.comparingLong((Entry e) -> e.created).reversed());
 				List<Entry> newest = new ArrayList<>(entries.subList(0, Math.min(MAX_LISTED, entries.size())));
+				// Defaults come first and whatever the cap, since they are few and meant to be found
+				newest.addAll(0, defaults);
 				SwingUtilities.invokeLater(() -> done.accept(newest));
 			}
 			catch (IOException | RuntimeException e)
@@ -167,15 +201,23 @@ class CommunityLoadouts
 
 	/**
 	 * Publishes exported settings under a name, replacing this install's
-	 * loadout with the same name; calls back on the Swing thread.
+	 * loadout with the same name; calls back on the Swing thread. With a
+	 * {@code playerName}, it shows as the author instead of the made-up name.
 	 */
-	void publish(String rawName, String settings, Consumer<Result> done)
+	void publish(String rawName, String settings, String rawPlayerName, Consumer<Result> done)
 	{
 		String name = rawName == null ? "" : rawName.trim();
 		String problem = NameFilter.problem(name);
 		if (problem != null)
 		{
 			done.accept(new Result(problem, false));
+			return;
+		}
+		// Game names use non-breaking spaces between words
+		String playerName = rawPlayerName == null ? null : rawPlayerName.replace('\u00a0', ' ').trim();
+		if (playerName != null && (!playerName.matches(PLAYER_NAME) || playerName.equalsIgnoreCase(DEFAULT_AUTHOR)))
+		{
+			done.accept(new Result("Could not read your game name. Tick Anonymous to publish under a made-up name.", false));
 			return;
 		}
 
@@ -189,7 +231,7 @@ class CommunityLoadouts
 			Result result;
 			try
 			{
-				result = publishNow(name, settings);
+				result = publishNow(name, settings, playerName);
 			}
 			catch (IOException | RuntimeException e)
 			{
@@ -200,7 +242,7 @@ class CommunityLoadouts
 		});
 	}
 
-	private Result publishNow(String name, String settings) throws IOException
+	private Result publishNow(String name, String settings, String playerName) throws IOException
 	{
 		if (!loadWordList())
 		{
@@ -223,6 +265,8 @@ class CommunityLoadouts
 				slot = entry.slot;
 			}
 		}
+		// Replacing a loadout by name keeps its installs; a new one in a free slot starts at 0
+		boolean fresh = slot == -1;
 		for (int i = 0; slot == -1 && i < SLOTS; i++)
 		{
 			int free = i;
@@ -242,6 +286,10 @@ class CommunityLoadouts
 		now.addProperty(".sv", "timestamp");
 		body.add("created", now);
 		body.addProperty("settings", settings);
+		if (playerName != null)
+		{
+			body.addProperty("author", playerName);
+		}
 		Request request = new Request.Builder()
 			.url(authed(DATABASE_URL + "/users/" + uid + "/" + slot + ".json", token))
 			.put(RequestBody.create(JSON, gson.toJson(body)))
@@ -257,7 +305,12 @@ class CommunityLoadouts
 				return new Result("Could not publish right now. Try again later.", false);
 			}
 		}
-		return new Result("Published " + name + " as " + NameFilter.authorName(uid) + sectionsNote(settings) + ".", false);
+		if (fresh)
+		{
+			clearInstalls(uid, slot, token);
+		}
+		String author = playerName != null ? playerName : NameFilter.authorName(uid);
+		return new Result("Published " + name + " as " + author + sectionsNote(settings) + ".", false);
 	}
 
 	/** A note on which sections a loadout holds, when it holds only some of them. */
@@ -291,9 +344,15 @@ class CommunityLoadouts
 					.url(authed(DATABASE_URL + "/users/" + entry.uid + "/" + entry.slot + ".json", token()))
 					.delete()
 					.build();
+				boolean deleted;
 				try (Response response = http.newCall(request).execute())
 				{
-					message = response.isSuccessful() ? "Deleted " + entry.name + "." : "Could not delete it right now.";
+					deleted = response.isSuccessful();
+				}
+				message = deleted ? "Deleted " + entry.name + "." : "Could not delete it right now.";
+				if (deleted)
+				{
+					clearInstalls(entry.uid, entry.slot, token());
 				}
 			}
 			catch (IOException | RuntimeException e)
@@ -326,6 +385,120 @@ class CommunityLoadouts
 		{
 			return "That loadout could not be read.";
 		}
+	}
+
+	/**
+	 * Counts this install as one that loaded the loadout, once per install, and
+	 * never for your own loadouts. Calls back on the Swing thread when the count
+	 * went up; failures are ignored, since the count is only a rough signal.
+	 */
+	void recordInstall(Entry entry, Runnable counted)
+	{
+		if (entry == null || entry.installedByMe || entry.uid.equals(uid()))
+		{
+			return;
+		}
+		executor.execute(() ->
+		{
+			try
+			{
+				String token = token();
+				String me = uid();
+				if (me == null || me.equals(entry.uid))
+				{
+					return;
+				}
+				Request request = new Request.Builder()
+					.url(authed(DATABASE_URL + "/installs/" + entry.uid + "/" + entry.slot + "/" + me + ".json", token))
+					.put(RequestBody.create(JSON, "true"))
+					.build();
+				try (Response response = http.newCall(request).execute())
+				{
+					if (!response.isSuccessful())
+					{
+						return;
+					}
+				}
+				SwingUtilities.invokeLater(() ->
+				{
+					if (!entry.installedByMe)
+					{
+						entry.installedByMe = true;
+						entry.installs++;
+						counted.run();
+					}
+				});
+			}
+			catch (IOException | RuntimeException e)
+			{
+				// Not counted
+			}
+		});
+	}
+
+	/** Removes the install count of one of this install's slots, so a new loadout there starts at 0. */
+	private void clearInstalls(String uid, int slot, String token)
+	{
+		Request request = new Request.Builder()
+			.url(authed(DATABASE_URL + "/installs/" + uid + "/" + slot + ".json", token))
+			.delete()
+			.build();
+		try (Response ignored = http.newCall(request).execute())
+		{
+			// Best effort: a stale count only means a new loadout in this slot starts above 0
+		}
+		catch (IOException e)
+		{
+			// Same
+		}
+	}
+
+	/**
+	 * Data the list can do without, such as download counts and the defaults, or
+	 * null when it cannot be read, so the published loadouts still show.
+	 */
+	private JsonElement optionalJson(String url)
+	{
+		try
+		{
+			return getJson(url);
+		}
+		catch (IOException | RuntimeException e)
+		{
+			return null;
+		}
+	}
+
+	/** Fills in each loadout's download count, and whether this install ({@code me}) is one of them. */
+	private static void countInstalls(List<Entry> entries, JsonElement installs, String me)
+	{
+		for (Entry entry : entries)
+		{
+			JsonObject installers = installersOf(installs, entry);
+			entry.installs = installers == null ? 0 : installers.size();
+			entry.installedByMe = installers != null && me != null && installers.has(me);
+		}
+	}
+
+	/** The installer ids of one loadout in the downloaded installs tree, or null for none. */
+	private static JsonObject installersOf(JsonElement installs, Entry entry)
+	{
+		if (installs == null || !installs.isJsonObject())
+		{
+			return null;
+		}
+		JsonElement slots = installs.getAsJsonObject().get(entry.uid);
+		JsonElement slot = null;
+		// Like users, slots come back as an array or as an object keyed by slot
+		if (slots != null && slots.isJsonArray() && entry.slot < slots.getAsJsonArray().size())
+		{
+			slot = slots.getAsJsonArray().get(entry.slot);
+		}
+		else if (slots != null && slots.isJsonObject())
+		{
+			slot = slots.getAsJsonObject().get(String.valueOf(entry.slot));
+		}
+		return slot != null && slot.isJsonObject() ? slot.getAsJsonObject() : null;
 	}
 
 	/** Downloads the word list once; returns whether it is loaded. */
@@ -477,6 +650,22 @@ class CommunityLoadouts
 		return sections;
 	}
 
+	/**
+	 * The game name a loadout shows as its author, or null for the made-up name.
+	 * The name cannot be checked against the game, so blocked words fall back too.
+	 */
+	private static String playerNameOf(JsonObject value)
+	{
+		JsonElement author = value.get("author");
+		if (author == null || !author.isJsonPrimitive())
+		{
+			return null;
+		}
+		String name = author.getAsString();
+		return name.matches(PLAYER_NAME) && !name.equalsIgnoreCase(DEFAULT_AUTHOR) && !NameFilter.isBlocked(name)
+			? name : null;
+	}
+
 	private static HttpUrl authed(String url, String token)
 	{
 		return HttpUrl.parse(url).newBuilder().addQueryParameter("auth", token).build();
@@ -530,7 +719,7 @@ class CommunityLoadouts
 				}
 				String settings = value.get("settings").getAsString();
 				entries.add(new Entry(uid, Integer.parseInt(slot.getKey()), name,
-					value.get("created").getAsLong(), settings, sectionsOf(settings)));
+					value.get("created").getAsLong(), settings, playerNameOf(value), sectionsOf(settings)));
 			}
 			catch (RuntimeException e)
 			{

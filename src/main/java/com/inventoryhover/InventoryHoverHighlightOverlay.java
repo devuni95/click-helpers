@@ -1582,12 +1582,23 @@ class InventoryHoverHighlightOverlay extends Overlay
 
 		// Replacing a fill takes more particles, in the gradient's colors, so the area still reads
 		boolean replacing = replacesFill(tab, strength);
+		// Effects are laid out over the band's outer radius, and kept to the band by the clip. Detached ones
+		// reach as far as set, and with spread grow out from where they started over their length
+		float radius = outer;
+		if (detached)
+		{
+			radius *= Math.max(25, tab.spotlightEffectReach) / 100f;
+		}
 		// Keep about the same density when the band reaches past the spotlight, such as out to the falloff color
-		float reach = Math.min(3f, outer / Math.max(1f, tab.spotlightRadius));
+		float reach = Math.min(6f, radius / Math.max(1f, tab.spotlightRadius));
 		int particles = Math.min(MAX_PARTICLES,
 			(int) ((replacing ? PARTICLES * 3 : PARTICLES) * Math.max(1f, reach * reach)));
-		// Effects are laid out over the band's outer radius, and kept to the band by the clip
-		float radius = outer;
+		if (detached && tab.spotlightEffectSpread > 0)
+		{
+			// Detached strength is 1 - progress cubed, so this undoes it
+			float progress = (float) Math.cbrt(Math.max(0, 1 - strength));
+			radius = Math.max(1f, radius * (1 - Math.min(100, tab.spotlightEffectSpread) / 100f * (1 - progress)));
+		}
 		float cx = mouse.getX();
 		float cy = mouse.getY();
 		// The effect plays out around this point: the mouse, or where a detached effect started

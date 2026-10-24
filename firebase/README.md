@@ -20,7 +20,9 @@ Until both values are set, the Community tab says it is not available.
 ## Data
 
 ```
-users/<uid>/<slot 0-9>: { name, created, settings, hidden? }
+users/<uid>/<slot 0-9>: { name, created, settings, author?, hidden? }
+installs/<owner uid>/<slot>/<installer uid>: true
+official/<slot>: { name, created, settings }   (default loadouts, admin only)
 banned/<uid>: true
 config/writesOpen: false   (optional kill switch)
 ```
@@ -28,6 +30,28 @@ config/writesOpen: false   (optional kill switch)
 The rules allow each install 10 slots, only its own writes and deletes, names of
 3 to 32 letters, numbers, spaces and ' _ . ! ? ( ) -, a server timestamp, and
 settings up to 64 KB. Players cannot set any other field.
+
+`author` is the publisher's game name, sent only when they untick Anonymous: 1 to
+12 letters, numbers, spaces, `_` or `-`. It cannot be checked against the game, so
+someone sending requests by hand could claim any name; hide such entries as below.
+
+Default loadouts live under `official` and show by the author "Default", which
+players cannot publish under. Players cannot write there; edit
+`firebase/defaults.py`, run it, then upload as an admin (in Git Bash, set
+`MSYS_NO_PATHCONV=1` so the path is not rewritten):
+
+```
+python firebase/defaults.py
+firebase database:set /official firebase/defaults.json -f
+```
+
+Their downloads count under `installs/default/<slot>`.
+
+Download counts live under `installs`. Each install may add only its own id, with
+the value `true`, under a loadout that exists and is not its own. The owner may
+only clear a slot's count, which the plugin does on delete and when a new
+loadout takes a free slot. New anonymous accounts can inflate a count, so treat
+it as a rough signal.
 
 Name words are checked in the plugin with the public PurgoMalum service
 (purgomalum.com) before publishing. The rules cannot call outside services, so

@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
@@ -30,6 +31,7 @@ import net.runelite.api.EnumComposition;
 import net.runelite.api.GameState;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.ParamID;
+import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.events.BeforeRender;
 import net.runelite.api.events.ChatMessage;
@@ -704,13 +706,24 @@ public class InventoryHoverHighlightPlugin extends Plugin
 		}
 		if (!config.communityLoadouts())
 		{
-			return "Turn on Community loadouts in the plugin settings, under Import/export settings.";
+			return "Community loadouts is off. Turn it on in RuneLite's Click Helpers plugin settings (the gear icon), under Import/export settings.";
 		}
 		if (publishing && client.getGameState() != GameState.LOGGED_IN)
 		{
 			return "Log in to the game to publish a loadout.";
 		}
 		return null;
+	}
+
+	/** Reads the logged-in player's game name on the client thread; calls back on the Swing thread, with null when logged out. */
+	void playerName(Consumer<String> done)
+	{
+		clientThread.invokeLater(() ->
+		{
+			Player player = client.getLocalPlayer();
+			String name = player == null ? null : player.getName();
+			SwingUtilities.invokeLater(() -> done.accept(name));
+		});
 	}
 
 	/** Exports the settings to the clipboard; returns a message for the player. */

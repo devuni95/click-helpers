@@ -64,7 +64,7 @@ tab; see
   grow, shrink, pulse or show as an X
 - **Miss outline**: outlines the slot nearest a dead click, the one you most likely
   meant, in place of the normal outline until it fades. **Miss outline width**
-  sets its line width; 0 makes it one thicker than the hover outline
+  sets its line width (default 2); 0 makes it one thicker than the hover outline
 - Miss dots are set per tab
 
 ### Dead areas
@@ -181,11 +181,20 @@ game to publish, and names with bad words are refused and cleared.
 
 - **Publish as**: fills in with the picked loadout's name; change it to publish
   under another name
+- **Anonymous**: on by default, showing the made-up author name. Untick it to show
+  your game name as the author of what you publish next
 - **Sections to publish**: publish only some settings sections, so others can take
   just your click feedback or your spotlight
-- **Browser**: a table sortable by name, author, date or sections, a search box,
-  a section filter (ticked sections, with **Only these** for exact matches), your
-  own loadouts only, and a preview of every setting a loadout changes
+- **Browser**: a table sortable by name, author, date, sections or downloads, a
+  search box, a section filter (ticked sections, with **Only these** for exact
+  matches), your own loadouts only, and a preview of every setting a loadout changes
+- **Downloads**: how many other players loaded a loadout, counted once per install.
+  Your own loads are not counted. Publishing again under the same name keeps the
+  count; a new loadout starts at 0
+- **Small x**: shows on your own loadouts in the browser and deletes that one
+- **Defaults**: five starter loadouts by the author **Default** (in green), always
+  listed: Clean Outline, PvP Switcher, Prayer Flicker, High Contrast and
+  Spotlight Sparkle. No player can publish as Default
 - **Load** asks which of its sections to take, then adds it as a new loadout or
   applies it over your current settings
 
@@ -197,12 +206,14 @@ press a button. Then:
 
 - **Google Firebase** (firebaseio.com, googleapis.com): an anonymous sign-in,
   and the loadouts you publish or delete (name, time and settings). Listing
-  loadouts downloads the published ones.
+  loadouts downloads the published ones and their download counts. Loading
+  someone else's loadout records your anonymous id under it, once, to count
+  the download.
 - **jsDelivr** (cdn.jsdelivr.net): downloads a public list of blocked words,
   once per session, to check loadout names. Nothing about you is sent.
 
-Both see your IP address, as with any web request. Your username and account
-are never sent. Setup and admin notes are in [`firebase/README.md`](firebase/README.md).
+Both see your IP address, as with any web request. Your account is never sent.
+Your game name is sent only when you untick **Anonymous** and publish. Setup and admin notes are in [`firebase/README.md`](firebase/README.md).
 
 ### Side panel
 
@@ -245,7 +256,9 @@ sections of their own:
     the colors drawn under them unless you set a **Custom effect color**
   - **Effect on click** plays it as a burst on each click, with an **Effect length**,
     optional **Click result colors** for good, bad and refused clicks, and **Detach
-    from mouse** to let each burst play out where it started. **Effect speed** and
+    from mouse** to let each burst play out where it started. **Detached reach**
+    sets how far a detached burst reaches (up to 1000%), and **Detached spread**
+    makes it grow out from the click over its length. **Effect speed** and
     **Effect size** scale it
   - **Click effects anywhere** (inventory only): clicks outside the panels, such as
     on the game world, play the effect too, at most once per **Click anywhere delay**

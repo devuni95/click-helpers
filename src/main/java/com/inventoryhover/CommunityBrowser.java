@@ -43,11 +43,15 @@ import net.runelite.client.ui.FontManager;
 /**
  * Window for browsing community loadouts: a table sortable by any column,
  * search over names, authors and sections, a section filter, a filter for
- * your own loadouts, and a preview of every setting a loadout changes.
+ * your own loadouts, download counts, a small x to delete your own, and a
+ * preview of every setting a loadout changes.
  */
 class CommunityBrowser extends JFrame
 {
-	private static final String[] COLUMNS = {"Name", "Author", "Published", "Sections"};
+	private static final String[] COLUMNS = {"Name", "Author", "Published", "Sections", "Downloads", ""};
+	private static final int DOWNLOADS_COLUMN = 4;
+	/** The column with a small x on your own loadouts, to delete them. */
+	private static final int REMOVE_COLUMN = 5;
 
 	private final InventoryHoverHighlightPlugin plugin;
 	/** Why the community features cannot be used right now, or null. */
@@ -81,7 +85,7 @@ class CommunityBrowser extends JFrame
 		this.loadoutAdded = loadoutAdded;
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		setMinimumSize(new Dimension(640, 400));
-		setSize(900, 560);
+		setSize(980, 560);
 
 		JPanel root = new JPanel(new BorderLayout(0, 8));
 		root.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -220,6 +224,12 @@ class CommunityBrowser extends JFrame
 		table.getColumnModel().getColumn(1).setPreferredWidth(140);
 		table.getColumnModel().getColumn(2).setPreferredWidth(100);
 		table.getColumnModel().getColumn(3).setPreferredWidth(70);
+		table.getColumnModel().getColumn(DOWNLOADS_COLUMN).setPreferredWidth(90);
+		// Wide enough for the header and its sort arrow
+		table.getColumnModel().getColumn(DOWNLOADS_COLUMN).setMinWidth(85);
+		table.getColumnModel().getColumn(REMOVE_COLUMN).setMinWidth(24);
+		table.getColumnModel().getColumn(REMOVE_COLUMN).setMaxWidth(24);
+		sorter.setSortable(REMOVE_COLUMN, false);
 		table.setDefaultRenderer(Object.class, new Renderer());
 		table.setDefaultRenderer(Date.class, new Renderer());
 		table.setDefaultRenderer(Integer.class, new Renderer());
@@ -235,6 +245,16 @@ class CommunityBrowser extends JFrame
 			@Override
 			public void mouseClicked(MouseEvent e)
 			{
+				int row = table.rowAtPoint(e.getPoint());
+				if (row >= 0 && table.columnAtPoint(e.getPoint()) == REMOVE_COLUMN)
+				{
+					if (model.isMine(table.convertRowIndexToModel(row)))
+					{
+						table.setRowSelectionInterval(row, row);
+						deleteSelected();
+					}
+					return;
+				}
 				if (e.getClickCount() == 2 && selected() != null)
 				{
 					loadSelected();
@@ -380,7 +400,8 @@ class CommunityBrowser extends JFrame
 		}
 		title.setText(entry.name);
 		byline.setText("by " + entry.author() + (mine ? " (you)" : "") + ", "
-			+ new SimpleDateFormat("MMM d yyyy, HH:mm").format(new Date(entry.created)));
+			+ new SimpleDateFormat("MMM d yyyy, HH:mm").format(new Date(entry.created))
+			+ ", " + entry.installs + (entry.installs == 1 ? " download" : " downloads"));
 		preview.setText(plugin.loadouts().describe(entry.settings));
 		preview.setCaretPosition(0);
 	}
@@ -415,6 +436,7 @@ class CommunityBrowser extends JFrame
 				String name = plugin.loadouts().addLoadout(entry.name, plugin.loadouts().onlySections(entry.settings, sections));
 				loadoutAdded.accept(name);
 				status.setText("Added loadout " + name + scope + ". Load it from the Loadouts list when you want it.");
+				countDownload(entry);
 			}
 			catch (RuntimeException e)
 			{
@@ -423,8 +445,30 @@ class CommunityBrowser extends JFrame
 		}
 		else if (answer == 1)
 		{
-			status.setText(plugin.community().load(entry, sections));
+			String message = plugin.community().load(entry, sections);
+			status.setText(message);
+			if (message.startsWith("Loaded"))
+			{
+				countDownload(entry);
+			}
 		}
+	}
+
+	/** Counts a download of someone else's loadout and redraws its row when the count goes up. */
+	private void countDownload(CommunityLoadouts.Entry entry)
+	{
+		plugin.community().recordInstall(entry, () ->
+		{
+			int row = model.entries.indexOf(entry);
+			if (row >= 0)
+			{
+				model.fireTableRowsUpdated(row, row);
+			}
+			if (selected() == entry)
+			{
+				showSelected();
+			}
+		});
 	}
 
 	private void deleteSelected()
@@ -493,7 +537,7 @@ class CommunityBrowser extends JFrame
 		@Override
 		public Class<?> getColumnClass(int column)
 		{
-			return column == 2 ? Date.class : column == 3 ? Integer.class : String.class;
+			return column == 2 ? Date.class : column == 3 || column == DOWNLOADS_COLUMN ? Integer.class : String.class;
 		}
 
 		@Override
@@ -505,12 +549,17 @@ class CommunityBrowser extends JFrame
 				case 0: return entry.name;
 				case 1: return entry.author();
 				case 2: return new Date(entry.created);
-				default: return entry.sections.size();
+				case 3: return entry.sections.size();
+				case DOWNLOADS_COLUMN: return entry.installs;
+				default: return isMine(row) ? "\u00d7" : "";
 			}
 		}
 	}
 
-	/** Draws rows in the RuneLite colors, with your own loadouts' authors in orange. */
+	/**
+	 * Draws rows in the RuneLite colors, with your own loadouts' authors and
+	 * delete marks in orange and the Default author in green.
+	 */
 	private class Renderer extends DefaultTableCellRenderer
 	{
 		private final SimpleDateFormat format = new SimpleDateFormat("MMM d yyyy");
@@ -527,12 +576,17 @@ class CommunityBrowser extends JFrame
 					: count + (model.totalSections > 0 ? " of " + model.totalSections : "");
 			}
 			super.getTableCellRendererComponent(table, shown, isSelected, false, row, column);
-			setBorder(new EmptyBorder(0, 6, 0, 6));
+			boolean remove = column == REMOVE_COLUMN;
+			setBorder(new EmptyBorder(0, remove ? 0 : 6, 0, remove ? 0 : 6));
+			setHorizontalAlignment(remove ? CENTER : column == DOWNLOADS_COLUMN ? RIGHT : LEFT);
 			boolean mine = model.isMine(table.convertRowIndexToModel(row));
+			setToolTipText(remove && mine ? "Delete your published loadout" : null);
 			if (!isSelected)
 			{
 				setBackground(row % 2 == 0 ? ColorScheme.DARKER_GRAY_COLOR : ColorScheme.DARK_GRAY_COLOR);
-				setForeground(column == 1 && mine ? ColorScheme.BRAND_ORANGE : Color.WHITE);
+				boolean isDefault = model.entries.get(table.convertRowIndexToModel(row)).isDefault();
+				setForeground((column == 1 || remove) && mine ? ColorScheme.BRAND_ORANGE
+					: column == 1 && isDefault ? ColorScheme.PROGRESS_COMPLETE_COLOR : Color.WHITE);
 			}
 			return this;
 		}

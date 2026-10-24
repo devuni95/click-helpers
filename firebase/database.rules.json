@@ -15,11 +15,30 @@
           "settings": {
             ".validate": "newData.isString() && newData.val().length <= 65536"
           },
+          "author": {
+            ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9 _-]{1,12}$/) && newData.val().toLowerCase() !== 'default'"
+          },
           "$other": {
             ".validate": false
           }
         }
       }
+    },
+    "installs": {
+      ".read": true,
+      "$owner": {
+        "$slot": {
+          ".write": "auth != null && auth.uid === $owner && !newData.exists()",
+          "$installer": {
+            ".write": "auth != null && auth.uid === $installer && $installer !== $owner && !root.child('banned').child(auth.uid).exists() && root.child('config').child('writesOpen').val() !== false",
+            ".validate": "newData.val() === true && (root.child('users').child($owner).child($slot).exists() || ($owner === 'default' && root.child('official').child($slot).exists()))"
+          }
+        }
+      }
+    },
+    "official": {
+      ".read": true,
+      ".write": false
     },
     "banned": {
       ".read": false,

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -55,6 +56,8 @@ class ClickHelpersPanel extends PluginPanel
 	private final JComboBox<String> loadoutBox = new JComboBox<>();
 	private final JLabel loadoutStatus = new JLabel(" ");
 	private final JLabel communityStatus = new JLabel(" ");
+	/** Config key with no config item for the Anonymous box, so it never shows in exports. */
+	private static final String ANONYMOUS_KEY = "communityAnonymous";
 	private final CommunityBrowser browser;
 	private SettingsView settingsView;
 	private final JTextField loadoutName = new JTextField();
@@ -352,6 +355,23 @@ class ClickHelpersPanel extends PluginPanel
 		page.add(left(fieldLabel("Publish as")));
 		publishName.setToolTipText("Name to publish the picked loadout under; fills in with the loadout's name");
 		page.add(left(publishName));
+		JCheckBox anonymous = new JCheckBox("Anonymous");
+		anonymous.setToolTipText("Show a made-up author name; untick to show your game name as the author");
+		anonymous.setSelected(!"false".equals(configManager.getConfiguration(InventoryHoverHighlightConfig.GROUP, ANONYMOUS_KEY)));
+		anonymous.addActionListener(e ->
+		{
+			if (!anonymous.isSelected() && JOptionPane.showConfirmDialog(this,
+				"Your game name will be sent to Google Firebase, a 3rd party server not controlled or verified by"
+					+ " the RuneLite developers, and shown to everyone as the author of what you publish.\n\n"
+					+ "Show your game name?", "Community loadouts", JOptionPane.OK_CANCEL_OPTION,
+				JOptionPane.WARNING_MESSAGE) != JOptionPane.OK_OPTION)
+			{
+				anonymous.setSelected(true);
+				return;
+			}
+			configManager.setConfiguration(InventoryHoverHighlightConfig.GROUP, ANONYMOUS_KEY, anonymous.isSelected());
+		});
+		page.add(left(anonymous));
 		page.add(left(fieldLabel("Sections to publish")));
 		sectionsButton.setToolTipText("Pick which settings sections to publish");
 		sectionsButton.addActionListener(e -> chooseSections());
@@ -376,8 +396,8 @@ class ClickHelpersPanel extends PluginPanel
 			String name = publishName.getText().trim().isEmpty() ? loadout : publishName.getText().trim();
 			publish.setEnabled(false);
 			communityStatus.setText(wrap("Publishing " + name + "..."));
-			plugin.community().publish(name, plugin.loadouts().onlySections(plugin.loadouts().loadoutJson(loadout), chosenSections),
-				result ->
+			String settings = plugin.loadouts().onlySections(plugin.loadouts().loadoutJson(loadout), chosenSections);
+			Consumer<String> send = author -> plugin.community().publish(name, settings, author, result ->
 			{
 				publish.setEnabled(true);
 				communityStatus.setText(wrap(result.message));
@@ -386,6 +406,21 @@ class ClickHelpersPanel extends PluginPanel
 					publishName.setText("");
 				}
 				browser.refreshIfOpen();
+			});
+			if (anonymous.isSelected())
+			{
+				send.accept(null);
+				return;
+			}
+			plugin.playerName(author ->
+			{
+				if (author == null)
+				{
+					publish.setEnabled(true);
+					communityStatus.setText(wrap("Log in to the game to publish under your game name."));
+					return;
+				}
+				send.accept(author);
 			});
 		});
 		JButton browse = new JButton("Browse");
@@ -410,6 +445,8 @@ class ClickHelpersPanel extends PluginPanel
 		if (problem != null)
 		{
 			communityStatus.setText(wrap(problem));
+			// The status line can sit below the visible part of the panel, so say it where it is seen
+			JOptionPane.showMessageDialog(this, problem, "Community loadouts", JOptionPane.INFORMATION_MESSAGE);
 		}
 		return problem != null;
 	}
