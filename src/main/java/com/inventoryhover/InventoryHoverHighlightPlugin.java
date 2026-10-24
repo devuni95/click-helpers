@@ -29,6 +29,8 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.EnumComposition;
 import net.runelite.api.GameState;
+import net.runelite.api.Item;
+import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.ParamID;
 import net.runelite.api.Player;
@@ -40,6 +42,7 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.gameval.InterfaceID;
+import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.callback.ClientThread;
@@ -251,6 +254,9 @@ public class InventoryHoverHighlightPlugin extends Plugin
 
 	final SwitchPractice practice = new SwitchPractice();
 
+	/** Whether the game's prayer glows were shown again for the empty inventory pause. */
+	private boolean prayerGlowsRestored;
+
 	/** Finished practice sessions, oldest first. Read on the Swing thread, so replaced, never changed. */
 	private volatile List<SwitchPractice.Summary> practiceHistory = List.of();
 
@@ -397,6 +403,17 @@ public class InventoryHoverHighlightPlugin extends Plugin
 		{
 			return;
 		}
+		if (pausedForEmptyInventory())
+		{
+			// The plugin draws no prayer gold while paused, so give the game its own glow back
+			if (!prayerGlowsRestored)
+			{
+				restorePrayerGlows();
+				prayerGlowsRestored = true;
+			}
+			return;
+		}
+		prayerGlowsRestored = false;
 
 		// The game re-shows the glow whenever its prayer script runs, so hide it every frame
 		for (int i = 0; i < PRAYER_COUNT; i++)
@@ -1084,6 +1101,28 @@ public class InventoryHoverHighlightPlugin extends Plugin
 	}
 
 	// Prayers
+
+	/** Whether to draw nothing because the inventory is empty and that setting is on; never during switch practice. */
+	boolean pausedForEmptyInventory()
+	{
+		if (!config.hideWhenEmpty() || practice.isActive())
+		{
+			return false;
+		}
+		ItemContainer inventory = client.getItemContainer(InventoryID.INV);
+		if (inventory == null)
+		{
+			return true;
+		}
+		for (Item item : inventory.getItems())
+		{
+			if (item.getId() > 0 && item.getQuantity() > 0)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
 
 	/** Shows the game's glow again on the prayers that are active. */
 	private void restorePrayerGlows()

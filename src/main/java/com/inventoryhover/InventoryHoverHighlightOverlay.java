@@ -34,13 +34,10 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import net.runelite.api.Client;
-import net.runelite.api.Item;
-import net.runelite.api.ItemContainer;
 import net.runelite.api.Point;
 import net.runelite.api.Prayer;
 import net.runelite.api.SpritePixels;
 import net.runelite.api.gameval.InterfaceID;
-import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetType;
 import net.runelite.client.game.ItemManager;
@@ -237,28 +234,6 @@ class InventoryHoverHighlightOverlay extends Overlay
 		setPriority(PRIORITY_LOW - 1);
 	}
 
-	/** Whether to draw nothing because the inventory is empty and that setting is on; never during switch practice. */
-	private boolean pausedForEmptyInventory()
-	{
-		if (!config.hideWhenEmpty() || plugin.practice.isActive())
-		{
-			return false;
-		}
-		ItemContainer inventory = client.getItemContainer(InventoryID.INV);
-		if (inventory == null)
-		{
-			return true;
-		}
-		for (Item item : inventory.getItems())
-		{
-			if (item.getId() > 0 && item.getQuantity() > 0)
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-
 	/** The fill pass overlays, added and removed with this overlay. */
 	List<Overlay> fillOverlays()
 	{
@@ -299,7 +274,7 @@ class InventoryHoverHighlightOverlay extends Overlay
 	 */
 	private void renderFills(Graphics2D graphics, PanelKind kind)
 	{
-		if (pausedForEmptyInventory())
+		if (plugin.pausedForEmptyInventory())
 		{
 			return;
 		}
@@ -338,7 +313,7 @@ class InventoryHoverHighlightOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (pausedForEmptyInventory())
+		if (plugin.pausedForEmptyInventory())
 		{
 			// Drop clicks made meanwhile, so nothing replays when an item comes back
 			plugin.mouseClicks.clear();
