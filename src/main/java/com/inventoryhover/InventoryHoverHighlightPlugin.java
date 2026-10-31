@@ -109,6 +109,9 @@ public class InventoryHoverHighlightPlugin extends Plugin
 
 	private static final int[] ITEM_CONTAINERS = {InterfaceID.Inventory.ITEMS, InterfaceID.Bankside.ITEMS};
 
+	// The menu option that drops an inventory item
+	private static final String DROP_OPTION = "Drop";
+
 	// Ticks after a click in which a refusal message is blamed on it
 	private static final int REJECT_WINDOW_TICKS = 2;
 
@@ -277,6 +280,9 @@ public class InventoryHoverHighlightPlugin extends Plugin
 	/** Clicks the game refused, as {x, y, nanoTime}, drawn as yellow rings. */
 	final List<long[]> rejectedClicks = new ArrayList<>();
 
+	/** Items dropped, as {x, y, nanoTime}, drawn as rings in the drop color. */
+	final List<long[]> dropClicks = new ArrayList<>();
+
 	/** Last tracked click as {x, y, tickCount}, or null. */
 	private int[] lastClick;
 
@@ -385,6 +391,7 @@ public class InventoryHoverHighlightPlugin extends Plugin
 		flashes.clear();
 		queuedClicks.clear();
 		rejectedClicks.clear();
+		dropClicks.clear();
 		lastClick = null;
 		pendingPrayers.clear();
 		consumeDelays.clear();
@@ -580,11 +587,16 @@ public class InventoryHoverHighlightPlugin extends Plugin
 		}
 		else if (group == INVENTORY_GROUP)
 		{
-			blocked = startConsumeDelay(Text.removeTags(event.getMenuOption()), event.getItemId());
+			String option = Text.removeTags(event.getMenuOption());
+			blocked = startConsumeDelay(option, event.getItemId());
 			if (blocked)
 			{
 				stats.add(ClickStats.Kind.REJECTED);
 				lastRejectedNanos = System.nanoTime();
+			}
+			if (DROP_OPTION.equalsIgnoreCase(option) && config.dropMarker())
+			{
+				dropClicks.add(new long[]{lastClick[0], lastClick[1], System.nanoTime()});
 			}
 		}
 
